@@ -21,12 +21,12 @@ function ProjectCard({imgSrc, description, tags, title, category, progLink, view
     <div className="group transition-all h-100 rounded-2xl relative overflow-hidden text-center">
       <Image
         src={imgSrc}
-        className="object-cover group-hover:scale-110 transition-all group-hover:blur-xs"
+        className="object-cover group-hover:scale-110 transition-all duration-500 group-hover:blur-xs"
         alt=""
         fill={true}
       />
       <div
-        className={`h-full mt-100 space-y-2 w-full flex absolute bg-black/50 p-3 group-hover:mt-0 transition-all`}
+        className={`h-full mt-100 space-y-2 w-full flex absolute bg-gradient-to-b from-transparent to-black/80 p-3 group-hover:mt-0 transition-all duration-500 `}
       >
         <div className="mt-auto space-y-1">
           <div className=" h-fit bg-white/10 text-start space-y-1 py-3 px-5 rounded-lg backdrop-blur-sm w-full border border-white/20">
