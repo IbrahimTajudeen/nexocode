@@ -21,7 +21,7 @@ function ProjectCard({imgSrc, description, tags, title, category, progLink, view
     <div className="group transition-all h-100 rounded-2xl relative overflow-hidden text-center">
       <Image
         src={imgSrc}
-        className="object-cover group-hover:scale-110 transition-all duration-500 group-hover:blur-xs"
+        className="object-cover group-hover:scale-110 transition-all duration-500 "
         alt=""
         fill={true}
       />
