@@ -89,4 +89,52 @@ function ServiceCard({ children, title, content }: { children: ReactNode, title:
   );
 }
 
-export { ProjectCard, ServiceCard };
+type TestimonialCardProps = {
+  quote: string;
+  name: string;
+  role: string;
+  avatar: string;
+};
+
+function TestimonialCard({
+  quote,
+  name,
+  role,
+  avatar,
+}: TestimonialCardProps) {
+  return (
+    <div className="relative max-w-md rounded-3xl border border-white/10 bg-[#2a2a2a] p-6 text-white shadow-lg">
+      {/* Quote Icon */}
+      <div className="absolute -top-5 left-6 flex h-10 w-10 items-center justify-center rounded-full bg-[#3a3a3a] text-2xl font-bold text-white shadow">
+        “
+      </div>
+
+      {/* Quote Text */}
+      <p className="mt-4 text-sm leading-relaxed text-gray-200">
+        {quote}
+      </p>
+
+      {/* Divider */}
+      <div className="my-5 h-px w-full bg-white/10" />
+
+      {/* Author */}
+      <div className="flex items-center gap-4">
+        <div className="relative h-10 w-10 overflow-hidden rounded-full">
+          <Image
+            src={avatar}
+            alt={name}
+            fill
+            className="object-cover"
+          />
+        </div>
+
+        <div>
+          <p className="text-sm font-semibold">{name}</p>
+          <p className="text-xs text-gray-400">{role}</p>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+export { ProjectCard, ServiceCard, TestimonialCard };
