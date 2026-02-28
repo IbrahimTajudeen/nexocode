@@ -102,7 +102,7 @@ const projects = [
 
 export default function Portfolio() {
   return (
-    <section>
+    <section id="portfolio">
       <PageHeader title="Portfolio" content="Portfolio content" />
       <div className="mx-auto px-6 grid grid-cols-1 md:grid-cols-12 gap-5">
         <div className="col-span-1 md:col-span-3">

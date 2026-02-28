@@ -101,7 +101,7 @@ const proExp = [
 
 export default function Resume() {
   return (
-    <section className="bg-[#181818] text-white">
+    <section className="bg-[#181818] text-white" id="resume">
       <PageHeader 
         title="Resume"
         content="My Resume details"

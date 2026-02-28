@@ -19,23 +19,17 @@ import {
 
 import Social from './social-icon'
 
-export default function Sidebar() {
-  const [open, setOpen] = useState(false);
-  const [dropdown, setDropdown] = useState(false);
-  const [deepDropdown, setDeepDropdown] = useState(false);
+import { useSearchParams } from "next/navigation";
+
+export default function Sidebar({ open }: { open: boolean }) {
+  // const [dropdown, setDropdown] = useState(false);
+  // const [deepDropdown, setDeepDropdown] = useState(false);
 
   return (
-    <header className="hidden md:flex w-fit h-fit fixed top-0 bg-black border-2 border-[#2a2a2a] rounded-3xl my-[15vh] mx-auto p-6 flex-col justify-between">
-      {/* Mobile Toggle */}
-      <button
-        className="absolute top-6 right-6 lg:hidden"
-        onClick={() => setOpen(!open)}
-      >
-        <Menu className="w-6 h-6 text-white" />
-      </button>
-
+    <header className="md:flex w-fit h-fit fixed top-0 bg-black border-2 border-[#2a2a2a] rounded-3xl my-[15vh] mx-auto p-6 flex-col justify-between transition-all duration-100">
+      
       <div
-        className={`flex flex-col items-start transition-all duration-300 ${
+        className={`flex flex-col items-start transition-all duration-100 ${
           open ? "block" : "hidden xl:block"
         }`}
       >
@@ -49,7 +43,7 @@ export default function Sidebar() {
             <NavItem icon={<Layers />} label="Services" href="#services" />
 
             {/* Dropdown */}
-            <li>
+            {/* <li>
               <button
                 onClick={() => setDropdown(!dropdown)}
                 className="flex w-full items-center justify-between rounded-lg px-3 py-2 text-gray-300 hover:text-white hover:bg-white/5"
@@ -69,7 +63,7 @@ export default function Sidebar() {
                 <ul className="ml-6 mt-2 space-y-2">
                   <SubItem label="Dropdown 1" />
 
-                  {/* Deep Dropdown */}
+                   // Deep Dropdown 
                   <li>
                     <button
                       onClick={() => setDeepDropdown(!deepDropdown)}
@@ -100,7 +94,7 @@ export default function Sidebar() {
                   <SubItem label="Dropdown 4" />
                 </ul>
               )}
-            </li>
+            </li> */}
 
             <NavItem icon={<Mail />} label="Contact" href="#contact" />
           </ul>

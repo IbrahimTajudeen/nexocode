@@ -3,7 +3,6 @@
 import Image from "next/image";
 import Link from "next/link";
 import { LinkIcon, View } from "lucide-react";
-import { useState } from "react";
 
 interface ProjectCardProp {
     imgSrc: string;
@@ -36,7 +35,7 @@ function ProjectCard({imgSrc, description, tags, title, category, progLink, view
           <div className="h-fit bg-white/10 text-start space-y-1 py-3 px-5 rounded-lg backdrop-blur-sm w-full border border-white/20">
             <div className="flex flex-wrap space-x-1">
               {tags.map((v) => (
-                <span key={v} className="hover:text-black/30 hover:bg-white/20 rounded-full border border-white/30 w-fit bg-black/20 text-xs py-0.5 px-1.5">
+                <span key={v} className="hover:text-black/30 hover:bg-white/20 rounded-md border border-white/30 w-fit bg-black/20 text-xs py-0.5 px-1.5">
                     {v}
                 </span>
               ))}
