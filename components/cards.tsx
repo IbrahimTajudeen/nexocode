@@ -3,6 +3,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { LinkIcon, View } from "lucide-react";
+import { ReactNode } from "react";
 
 interface ProjectCardProp {
     imgSrc: string;
@@ -68,4 +69,24 @@ function ProjectCard({imgSrc, description, tags, title, category, progLink, view
   );
 }
 
-export { ProjectCard };
+function ServiceCard({ children, title, content }: { children: ReactNode, title: string, content: string }) {
+    
+  return (
+    <div className="p-10 group transition-all space-y-5 border-2 border-white/20 h-100 relative overflow-hidden text-start">
+        <div className="rounded-lg p-4 bg-white/20 w-fit">
+          {children}
+        </div>
+        <h1 className="font-bold text-2xl mt-3">{title}</h1>
+        <p className="text-sm mt-2 leading-loose">{content}</p>
+        <div className="h-full w-full absolute top-0 left-0 text-end transition-all duration-500 mt-100 group-hover:mt-0">
+            <div className="h-full w-full bg-gradient-to-t from-transparent to-white/20 group-hover:from-transparent group-hover:to-white/30 transition-all duration-500 rounded-tr-[50px]">
+              <Link href="#" className="text-white/30 hover:text-amber-900 hover:bg-white/50 transition-all inline-block justify-center items-center rounded-full bg-white/10 p-5 m-5">
+                  <LinkIcon size={32} />
+              </Link>
+            </div>
+        </div>
+    </div>
+  );
+}
+
+export { ProjectCard, ServiceCard };

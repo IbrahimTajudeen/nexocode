@@ -10,6 +10,7 @@ import Resume from '@/components/resume'
 import Portfolio from '@/components/portfolio'
 import Contact from '@/components/contact'
 import { Menu } from 'lucide-react'
+import Service from '@/components/service'
 
 export default function Home() {
   const [open, setOpen] = useState(false);
@@ -35,6 +36,7 @@ export default function Home() {
         <Skills />
         <Resume />
         <Portfolio />
+        <Service />
 
         <Contact />
       </section>
