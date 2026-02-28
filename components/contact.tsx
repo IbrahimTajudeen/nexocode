@@ -94,7 +94,7 @@ interface ContactInfo {
 function ContactItem({ title, infos, children }: ContactInfo) {
     return (
         <div className="flex space-x-2 items-center px-5 py-3 bg-white/10 backdrop-blur-xs rounded-lg hover:bg-white/20 hover:scale-105 transition-all duration-300">
-            <div className="rounded-full p-5 bg-white/20 border border-white/30">
+            <div className="rounded-full p-4 bg-white/20 border border-white/30">
                 {children}
             </div>
             <div>

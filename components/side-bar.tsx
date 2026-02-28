@@ -26,7 +26,7 @@ export default function Sidebar({ open }: { open: boolean }) {
   // const [deepDropdown, setDeepDropdown] = useState(false);
 
   return (
-    <header className="md:flex w-fit h-fit fixed top-0 bg-black border-2 border-[#2a2a2a] rounded-3xl my-[15vh] mx-auto p-6 flex-col justify-between transition-all duration-100">
+    <header className="md:flex w-fit h-fit fixed top-0 bg-black border-2 border-[#2a2a2a] rounded-3xl my-[25vh] mx-1 p-6 flex-col justify-between transition-all duration-100">
       
       <div
         className={`flex flex-col items-start transition-all duration-100 ${
