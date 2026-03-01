@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { LinkIcon, View } from "lucide-react";
+import { LinkIcon, QuoteIcon, View } from "lucide-react";
 import { ReactNode } from "react";
 
 interface ProjectCardProp {
@@ -103,10 +103,10 @@ function TestimonialCard({
   avatar,
 }: TestimonialCardProps) {
   return (
-    <div className="relative max-w-md rounded-3xl border border-white/10 bg-[#2a2a2a] p-6 text-white shadow-lg">
+    <div className="relative w-fit rounded-3xl border border-white/10 bg-[#2a2a2a] p-6 text-white shadow-lg mb-10">
       {/* Quote Icon */}
-      <div className="absolute -top-5 left-6 flex h-10 w-10 items-center justify-center rounded-full bg-[#3a3a3a] text-2xl font-bold text-white shadow">
-        “
+      <div className="absolute -top-5 left-6 flex h-10 w-10 items-center justify-center rounded-full bg-[#3a3a3a] text-5xl font-bold text-white shadow">
+        <QuoteIcon size={24} className="text-gray-400" />
       </div>
 
       {/* Quote Text */}

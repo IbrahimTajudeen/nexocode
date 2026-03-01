@@ -12,6 +12,7 @@ import Contact from '@/components/contact'
 import { Menu } from 'lucide-react'
 import Service from '@/components/service'
 import Testimonial from '@/components/testmonial'
+import Footer from '@/components/footer'
 
 export default function Home() {
   const [open, setOpen] = useState(false);
@@ -40,6 +41,7 @@ export default function Home() {
         <Service />
         <Testimonial />
         <Contact />
+        <Footer />
       </section>
     </main>
   );

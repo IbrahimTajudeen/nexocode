@@ -112,7 +112,7 @@ export default function Resume() {
         <div className="p-10 rounded-2xl shadow-2xl bg-gray-500/10 col-span-1 lg:col-span-4">
           <div className="border-5 mb-2 overflow-hidden rounded-2xl border-white/10">
             <Image
-              src="/img/profile.jpg"
+              src="/img/profile/image-3.png"
               alt="Profile"
               width={400}
               height={400}
