@@ -1,5 +1,5 @@
 import Image from "next/image";
-import { Mail, Phone, MapPin, Download, MessageCircleMore } from "lucide-react";
+import { Mail, Phone, MapPin, Download, MessageCircleMore, Eye } from "lucide-react";
 import React from "react";
 import Link from "next/link";
 import { motion } from "framer-motion";
@@ -147,8 +147,10 @@ export default function About() {
               whileTap={{ scale: 0.95 }}
               className="px-6 py-3 w-fit rounded-lg flex cursor-pointer bg-white text-black transition-all hover:translate-y-[-5px] hover:text-green-500 hover:bg-green-500/20 hover:shadow-md hover:shadow-green-500"
             >
-              <Download size={22} className="me-2 my-auto" />
-              <span className="inline-block w-full">Download Resume</span>
+              <Link href={'https://nexocode-cv.vercel.app/'} target="_blank" className="flex items-center gap-2 w-full h-full">
+                <Eye size={22} className="me-2 my-auto" />
+                <span className="inline-block w-full">View Resume</span>
+              </Link>
             </motion.button>
 
             <motion.button
