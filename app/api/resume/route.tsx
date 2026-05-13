@@ -8,13 +8,12 @@ export async function GET() {
   try {
     const buffer = await renderToBuffer(<PDFResume />)
 
-    return new NextResponse(buffer, {
-      headers: {
-        "Content-Type": "application/pdf",
-        "Content-Disposition":
-          'inline; filename="Ibrahim_Tajudeen_Resume.pdf"',
-      },
-    })
+return new NextResponse(new Uint8Array(buffer), {
+  headers: {
+    "Content-Type": "application/pdf",
+    "Content-Disposition": 'attachment; filename="resume.pdf"',
+  },
+})
   } catch (error) {
     console.error("Error generating PDF:", error)
 
