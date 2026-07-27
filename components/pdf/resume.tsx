@@ -62,13 +62,14 @@ function getStyles(accent: PDFAccent) {
       fontSize: 24,
       fontWeight: 700,
       color: c.primaryDark,
-      marginBottom: 4,
+      marginBottom: 8,
       letterSpacing: 1,
     },
     title: {
       fontSize: 12,
       color: "#4b5563",
       marginBottom: 8,
+      marginTop: 10,
       fontWeight: 600,
     },
     contactRow: {
