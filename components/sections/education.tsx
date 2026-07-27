@@ -1,12 +1,10 @@
 "use client"
 
-import { useState, useEffect, useRef } from "react"
+import { useRef } from "react"
 import { motion, useInView } from "framer-motion"
 import { Card, CardContent } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
-import { fetchEducation } from "@/lib/data-provider"
-import { leadershipAndStrengths } from "@/lib/resume-data"
-import { Education as EducationType } from "@/types/resume"
+import { useGetEducationQuery, useGetLeadershipStrengthsQuery } from "@/lib/redux/api/portfolioApi"
 import { GraduationCap, Award, Star, Target, Lightbulb, Users, Code2, Shield, Rocket } from "lucide-react"
 
 const strengthIcons = [Target, Lightbulb, Shield, Code2, Users, Rocket, Star]
@@ -14,15 +12,8 @@ const strengthIcons = [Target, Lightbulb, Shield, Code2, Users, Rocket, Star]
 export default function Education() {
   const ref = useRef(null)
   const isInView = useInView(ref, { once: true, margin: "-100px" })
-  const [eduList, setEduList] = useState<EducationType[]>([])
-
-  useEffect(() => {
-    async function loadData() {
-      const data = await fetchEducation()
-      setEduList(data)
-    }
-    loadData()
-  }, [])
+  const { data: eduList = [] } = useGetEducationQuery()
+  const { data: leadershipStrengths = [] } = useGetLeadershipStrengthsQuery()
 
   return (
     <section id="education" className="py-20 lg:py-32 relative bg-background/50">
@@ -93,11 +84,11 @@ export default function Education() {
               Leadership & Core Strengths
             </h3>
             <div className="space-y-4">
-              {leadershipAndStrengths.map((strength, index) => {
+              {leadershipStrengths.map((strength, index) => {
                 const IconComponent = strengthIcons[index % strengthIcons.length]
                 return (
                   <motion.div
-                    key={index}
+                    key={strength.id || index}
                     initial={{ opacity: 0, y: 20 }}
                     animate={isInView ? { opacity: 1, y: 0 } : {}}
                     transition={{ duration: 0.4, delay: 0.3 + index * 0.08 }}
@@ -108,7 +99,7 @@ export default function Education() {
                           <IconComponent className="w-4 h-4" />
                         </div>
                         <p className="text-xs sm:text-sm text-muted-foreground leading-relaxed">
-                          {strength}
+                          {strength.content}
                         </p>
                       </CardContent>
                     </Card>

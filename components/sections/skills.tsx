@@ -1,11 +1,10 @@
 "use client"
 
-import { useState, useEffect, useRef } from "react"
+import { useRef } from "react"
 import { motion, useInView } from "framer-motion"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
-import { fetchSkillCategories } from "@/lib/data-provider"
-import { SkillCategory } from "@/types/resume"
+import { useGetSkillCategoriesQuery } from "@/lib/redux/api/portfolioApi"
 import {
   Code2,
   Layout,
@@ -31,15 +30,7 @@ const iconMap: Record<string, React.ElementType> = {
 export default function Skills() {
   const ref = useRef(null)
   const isInView = useInView(ref, { once: true, margin: "-100px" })
-  const [categories, setCategories] = useState<SkillCategory[]>([])
-
-  useEffect(() => {
-    async function loadData() {
-      const data = await fetchSkillCategories()
-      setCategories(data)
-    }
-    loadData()
-  }, [])
+  const { data: categories = [] } = useGetSkillCategoriesQuery()
 
   return (
     <section id="skills" className="py-20 lg:py-32 relative bg-background/50">

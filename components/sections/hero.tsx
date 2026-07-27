@@ -1,24 +1,14 @@
 "use client"
 
-import { useState, useEffect } from "react"
 import { motion } from "framer-motion"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
-import { fetchPersonalInfo } from "@/lib/data-provider"
-import { PersonalInfo } from "@/types/resume"
+import { useGetPersonalInfoQuery } from "@/lib/redux/api/portfolioApi"
 import { Github, Linkedin, Globe, Mail, ArrowDown, MapPin, Sparkles } from "lucide-react"
 import Link from "next/link"
 
 export default function Hero() {
-  const [info, setInfo] = useState<PersonalInfo | null>(null)
-
-  useEffect(() => {
-    async function loadInfo() {
-      const data = await fetchPersonalInfo()
-      setInfo(data)
-    }
-    loadInfo()
-  }, [])
+  const { data: info } = useGetPersonalInfoQuery()
 
   if (!info) return null
 

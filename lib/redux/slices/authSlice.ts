@@ -5,13 +5,18 @@ interface AuthState {
   user: User | null
   session: Session | null
   isAuthenticated: boolean
+  // True until the very first auth check (Supabase session fetch, or the
+  // localStorage demo-mode check) has completed. Consumers MUST wait for
+  // this to become false before deciding to redirect - otherwise a valid
+  // session can be missed on first paint and the user gets bounced to
+  // /admin/login even though they're signed in.
   loading: boolean
 }
 
 const initialState: AuthState = {
   user: null,
   session: null,
-  isAuthenticated: typeof window !== "undefined" ? localStorage.getItem("admin_authenticated") === "true" : false,
+  isAuthenticated: false,
   loading: true,
 }
 
@@ -19,11 +24,26 @@ export const authSlice = createSlice({
   name: "auth",
   initialState,
   reducers: {
+    // Used when Supabase is configured: session is the source of truth.
     setAuth: (state, action: PayloadAction<{ user: User | null; session: Session | null }>) => {
       state.user = action.payload.user
       state.session = action.payload.session
-      state.isAuthenticated = Boolean(action.payload.session || (typeof window !== "undefined" && localStorage.getItem("admin_authenticated") === "true"))
+      state.isAuthenticated = Boolean(action.payload.session)
       state.loading = false
+    },
+    // Used only in local demo mode (no Supabase env configured).
+    setDemoAuth: (state, action: PayloadAction<boolean>) => {
+      state.user = null
+      state.session = null
+      state.isAuthenticated = action.payload
+      state.loading = false
+      if (typeof window !== "undefined") {
+        if (action.payload) {
+          localStorage.setItem("admin_authenticated", "true")
+        } else {
+          localStorage.removeItem("admin_authenticated")
+        }
+      }
     },
     clearAuth: (state) => {
       state.user = null
@@ -40,5 +60,5 @@ export const authSlice = createSlice({
   },
 })
 
-export const { setAuth, clearAuth, setLoading } = authSlice.actions
+export const { setAuth, setDemoAuth, clearAuth, setLoading } = authSlice.actions
 export default authSlice.reducer

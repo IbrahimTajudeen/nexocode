@@ -4,7 +4,7 @@ import { useState, useEffect } from "react"
 import { useRouter } from "next/navigation"
 import { useDispatch, useSelector } from "react-redux"
 import { RootState } from "@/lib/redux/store"
-import { setAuth } from "@/lib/redux/slices/authSlice"
+import { setAuth, setDemoAuth } from "@/lib/redux/slices/authSlice"
 import { supabase, isSupabaseConfigured } from "@/lib/supabase/client"
 import { ShieldCheck, Key, Mail, Lock, ArrowLeft, AlertCircle, Sparkles } from "lucide-react"
 import Link from "next/link"
@@ -14,6 +14,7 @@ export default function AdminLoginPage() {
   const router = useRouter()
   const dispatch = useDispatch()
   const isAuthenticated = useSelector((state: RootState) => state.auth.isAuthenticated)
+  const authLoading = useSelector((state: RootState) => state.auth.loading)
 
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
@@ -21,10 +22,13 @@ export default function AdminLoginPage() {
   const [errorMsg, setErrorMsg] = useState("")
 
   useEffect(() => {
-    if (isAuthenticated) {
+    // Wait for the initial session check to finish - otherwise this fires
+    // on the default `isAuthenticated: false` state before Supabase has
+    // had a chance to report a real (logged-in) session.
+    if (!authLoading && isAuthenticated) {
       router.push("/admin/dashboard")
     }
-  }, [isAuthenticated, router])
+  }, [isAuthenticated, authLoading, router])
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -41,14 +45,12 @@ export default function AdminLoginPage() {
         setLoading(false)
         return
       }
-      localStorage.setItem("admin_authenticated", "true")
       dispatch(setAuth({ user: data.user, session: data.session }))
       router.push("/admin/dashboard")
     } else {
-      // Local demo mode fallback
+      // Local demo mode fallback (no Supabase env configured)
       if (email.trim() && password.trim()) {
-        localStorage.setItem("admin_authenticated", "true")
-        dispatch(setAuth({ user: null, session: null }))
+        dispatch(setDemoAuth(true))
         router.push("/admin/dashboard")
       } else {
         setErrorMsg("Please enter an email and password to log in.")

@@ -1,6 +1,8 @@
 import { createClient } from "@supabase/supabase-js"
 
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || ""
+// Supabase now issues "publishable" keys in place of the legacy "anon" key.
+// NEXT_PUBLIC_SUPABASE_ANON_KEY is kept only as a fallback for older setups.
 const supabaseKey =
   process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY ||
   process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY ||

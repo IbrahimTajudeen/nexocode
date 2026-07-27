@@ -27,8 +27,16 @@ import {
   useDeleteEducationMutation,
   useGetContactMessagesQuery,
   useDeleteContactMessageMutation,
+  useGetHighlightsQuery,
+  useAddHighlightMutation,
+  useUpdateHighlightMutation,
+  useDeleteHighlightMutation,
+  useGetLeadershipStrengthsQuery,
+  useAddLeadershipStrengthMutation,
+  useUpdateLeadershipStrengthMutation,
+  useDeleteLeadershipStrengthMutation,
 } from "@/lib/redux/api/portfolioApi"
-import { Project, PersonalInfo, WorkExperience, SkillCategory, Education, ProjectType } from "@/types/resume"
+import { Project, PersonalInfo, WorkExperience, SkillCategory, Education, ProjectType, Highlight, LeadershipStrength } from "@/types/resume"
 import {
   ShieldCheck,
   LogOut,
@@ -45,16 +53,29 @@ import {
   Code,
   CheckCircle2,
   Cpu,
+  Sparkles,
+  Award,
 } from "lucide-react"
 import Link from "next/link"
 import ThemeToggle from "@/components/theme-toggle"
+
+// Helpers to move between a textarea's newline-separated text and the
+// string[] shape the DB columns (responsibilities, achievements,
+// highlights, technologies) actually use.
+const linesToArray = (text: string) => text.split("\n").map((s) => s.trim()).filter(Boolean)
+const arrayToLines = (arr?: string[]) => (arr || []).join("\n")
+const csvToArray = (text: string) => text.split(",").map((s) => s.trim()).filter(Boolean)
+const arrayToCsv = (arr?: string[]) => (arr || []).join(", ")
 
 export default function AdminDashboardPage() {
   const router = useRouter()
   const dispatch = useDispatch()
   const isAuthenticated = useSelector((state: RootState) => state.auth.isAuthenticated)
+  const authLoading = useSelector((state: RootState) => state.auth.loading)
 
-  const [activeTab, setActiveTab] = useState<"projects" | "personal" | "experience" | "skills" | "education" | "messages">("projects")
+  const [activeTab, setActiveTab] = useState<
+    "projects" | "personal" | "experience" | "skills" | "education" | "highlights" | "strengths" | "messages"
+  >("projects")
 
   // RTK Query Hooks
   const { data: projectsList = [], isLoading: pLoading } = useGetProjectsQuery()
@@ -63,6 +84,8 @@ export default function AdminDashboardPage() {
   const { data: skillsList = [] } = useGetSkillCategoriesQuery()
   const { data: educationList = [] } = useGetEducationQuery()
   const { data: messagesList = [] } = useGetContactMessagesQuery()
+  const { data: highlightsList = [] } = useGetHighlightsQuery()
+  const { data: strengthsList = [] } = useGetLeadershipStrengthsQuery()
 
   // RTK Mutation Hooks
   const [addProject] = useAddProjectMutation()
@@ -85,6 +108,14 @@ export default function AdminDashboardPage() {
 
   const [deleteContactMessage] = useDeleteContactMessageMutation()
 
+  const [addHighlight] = useAddHighlightMutation()
+  const [updateHighlight] = useUpdateHighlightMutation()
+  const [deleteHighlight] = useDeleteHighlightMutation()
+
+  const [addLeadershipStrength] = useAddLeadershipStrengthMutation()
+  const [updateLeadershipStrength] = useUpdateLeadershipStrengthMutation()
+  const [deleteLeadershipStrength] = useDeleteLeadershipStrengthMutation()
+
   // Local Form / Modal States
   const [personalForm, setPersonalForm] = useState<PersonalInfo | null>(null)
 
@@ -104,6 +135,12 @@ export default function AdminDashboardPage() {
   const [isEduModalOpen, setIsEduModalOpen] = useState(false)
   const [editingEdu, setEditingEdu] = useState<Partial<Education> | null>(null)
 
+  const [isHighlightModalOpen, setIsHighlightModalOpen] = useState(false)
+  const [editingHighlight, setEditingHighlight] = useState<Partial<Highlight> | null>(null)
+
+  const [isStrengthModalOpen, setIsStrengthModalOpen] = useState(false)
+  const [editingStrength, setEditingStrength] = useState<Partial<LeadershipStrength> | null>(null)
+
   const [toastMsg, setToastMsg] = useState<{ type: "success" | "error"; text: string } | null>(null)
 
   const showToast = (text: string, type: "success" | "error" = "success") => {
@@ -111,12 +148,14 @@ export default function AdminDashboardPage() {
     setTimeout(() => setToastMsg(null), 3500)
   }
 
-  // Auth Guard
+  // Auth Guard - wait for the initial session check (authLoading) to
+  // finish before deciding to redirect, otherwise a valid session can be
+  // missed on first paint and a logged-in admin gets bounced to /login.
   useEffect(() => {
-    if (!isAuthenticated) {
-      // router.push("/admin/login")
+    if (!authLoading && !isAuthenticated) {
+      router.push("/admin/login")
     }
-  }, [isAuthenticated, router])
+  }, [isAuthenticated, authLoading, router])
 
   const handleLogout = async () => {
     if (isSupabaseConfigured && supabase) {
@@ -135,6 +174,7 @@ export default function AdminDashboardPage() {
       id: editingProject.id || `proj-${Date.now()}`,
       name: editingProject.name,
       category: editingProject.category,
+      description: editingProject.description || "",
       tech: editingProject.tech || ["TypeScript"],
       highlights: editingProject.highlights || ["Architecture"],
       project_type: (editingProject.project_type as ProjectType) || "public",
@@ -178,10 +218,11 @@ export default function AdminDashboardPage() {
       company: editingExp.company,
       role: editingExp.role,
       period: editingExp.period || "2024 – Present",
+      description: editingExp.description || "",
       keyProject: editingExp.keyProject || "",
-      technologies: editingExp.technologies || ["NestJS", "React.js"],
-      responsibilities: editingExp.responsibilities || ["Architected scalable APIs"],
-      achievements: editingExp.achievements || ["Built wallet infrastructure"],
+      technologies: editingExp.technologies || [],
+      responsibilities: editingExp.responsibilities || [],
+      achievements: editingExp.achievements || [],
     }
 
     if (editingExp.id) {
@@ -259,6 +300,62 @@ export default function AdminDashboardPage() {
     showToast("Education item deleted")
   }
 
+  // --- HIGHLIGHT (About section cards) CRUD HANDLERS ---
+  const handleSaveHighlight = async (e: React.FormEvent) => {
+    e.preventDefault()
+    if (!editingHighlight?.title || !editingHighlight?.description) return
+
+    const item: Highlight = {
+      id: editingHighlight.id || `hl-${Date.now()}`,
+      icon: editingHighlight.icon || "Sparkles",
+      title: editingHighlight.title,
+      description: editingHighlight.description,
+    }
+
+    if (editingHighlight.id) {
+      await updateHighlight(item).unwrap()
+    } else {
+      await addHighlight(item).unwrap()
+    }
+
+    setIsHighlightModalOpen(false)
+    setEditingHighlight(null)
+    showToast("About highlight card updated!")
+  }
+
+  const handleDeleteHighlight = async (id: string) => {
+    if (!confirm("Delete this highlight card?")) return
+    await deleteHighlight(id).unwrap()
+    showToast("Highlight card deleted")
+  }
+
+  // --- LEADERSHIP & CORE STRENGTHS CRUD HANDLERS ---
+  const handleSaveStrength = async (e: React.FormEvent) => {
+    e.preventDefault()
+    if (!editingStrength?.content) return
+
+    const item: LeadershipStrength = {
+      id: editingStrength.id || `ls-${Date.now()}`,
+      content: editingStrength.content,
+    }
+
+    if (editingStrength.id) {
+      await updateLeadershipStrength(item).unwrap()
+    } else {
+      await addLeadershipStrength(item).unwrap()
+    }
+
+    setIsStrengthModalOpen(false)
+    setEditingStrength(null)
+    showToast("Core strength updated!")
+  }
+
+  const handleDeleteStrength = async (id: string) => {
+    if (!confirm("Delete this strength entry?")) return
+    await deleteLeadershipStrength(id).unwrap()
+    showToast("Strength entry deleted")
+  }
+
   // --- MESSAGES CRUD ---
   const handleDeleteMessage = async (id: string) => {
     if (!confirm("Delete message from inbox?")) return
@@ -266,13 +363,24 @@ export default function AdminDashboardPage() {
     showToast("Message deleted")
   }
 
-  // if (pLoading) {
-  //   return (
-  //     <div className="min-h-screen bg-background text-foreground flex items-center justify-center font-mono text-sm">
-  //       Loading RTK Query & Supabase Data...
-  //     </div>
-  //   )
-  // }
+  if (authLoading || !isAuthenticated) {
+    return (
+      <div className="min-h-screen bg-background text-foreground flex items-center justify-center font-mono text-sm">
+        Checking session...
+      </div>
+    )
+  }
+
+  if (pLoading) {
+    return (
+      <div className="min-h-screen bg-background text-foreground flex items-center justify-center font-mono text-sm">
+        Loading RTK Query & Supabase Data...
+      </div>
+    )
+  }
+
+  const inputClass = "w-full px-3 py-2 rounded-xl border border-border/80 bg-background/60 text-sm text-foreground placeholder:text-muted-foreground/70"
+  const labelClass = "block text-xs font-mono uppercase text-muted-foreground mb-1"
 
   return (
     <div className="min-h-screen bg-background text-foreground flex flex-col">
@@ -322,7 +430,7 @@ export default function AdminDashboardPage() {
       {/* Main Container */}
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 flex-1 w-full space-y-8">
         {/* Metric Cards Banner */}
-        <div className="grid grid-cols-2 md:grid-cols-5 gap-3 sm:gap-4">
+        <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-7 gap-3 sm:gap-4">
           <div className="p-4 rounded-2xl border border-border/80 bg-card/60 backdrop-blur-sm">
             <div className="flex items-center justify-between text-muted-foreground mb-1">
               <span className="text-xs font-mono">Projects</span>
@@ -355,6 +463,22 @@ export default function AdminDashboardPage() {
             <p className="text-2xl font-extrabold">{educationList.length}</p>
           </div>
 
+          <div className="p-4 rounded-2xl border border-border/80 bg-card/60 backdrop-blur-sm">
+            <div className="flex items-center justify-between text-muted-foreground mb-1">
+              <span className="text-xs font-mono">Highlights</span>
+              <Sparkles className="w-4 h-4 text-primary" />
+            </div>
+            <p className="text-2xl font-extrabold">{highlightsList.length}</p>
+          </div>
+
+          <div className="p-4 rounded-2xl border border-border/80 bg-card/60 backdrop-blur-sm">
+            <div className="flex items-center justify-between text-muted-foreground mb-1">
+              <span className="text-xs font-mono">Strengths</span>
+              <Award className="w-4 h-4 text-primary" />
+            </div>
+            <p className="text-2xl font-extrabold">{strengthsList.length}</p>
+          </div>
+
           <div className="p-4 rounded-2xl border border-border/80 bg-card/60 backdrop-blur-sm col-span-2 md:col-span-1">
             <div className="flex items-center justify-between text-muted-foreground mb-1">
               <span className="text-xs font-mono">Inbox</span>
@@ -366,71 +490,28 @@ export default function AdminDashboardPage() {
 
         {/* Tab Switcher */}
         <div className="flex border-b border-border/80 gap-1 sm:gap-2 overflow-x-auto pb-1">
-          <button
-            onClick={() => setActiveTab("projects")}
-            className={`px-3.5 py-2 text-xs font-mono uppercase tracking-wider rounded-t-xl transition-all border-b-2 flex items-center gap-2 whitespace-nowrap ${
-              activeTab === "projects"
-                ? "border-primary text-primary font-bold bg-primary/10"
-                : "border-transparent text-muted-foreground hover:text-foreground"
-            }`}
-          >
-            <FolderGit2 className="w-4 h-4" /> Projects ({projectsList.length})
-          </button>
-
-          <button
-            onClick={() => setActiveTab("personal")}
-            className={`px-3.5 py-2 text-xs font-mono uppercase tracking-wider rounded-t-xl transition-all border-b-2 flex items-center gap-2 whitespace-nowrap ${
-              activeTab === "personal"
-                ? "border-primary text-primary font-bold bg-primary/10"
-                : "border-transparent text-muted-foreground hover:text-foreground"
-            }`}
-          >
-            <User className="w-4 h-4" /> Personal Profile
-          </button>
-
-          <button
-            onClick={() => setActiveTab("experience")}
-            className={`px-3.5 py-2 text-xs font-mono uppercase tracking-wider rounded-t-xl transition-all border-b-2 flex items-center gap-2 whitespace-nowrap ${
-              activeTab === "experience"
-                ? "border-primary text-primary font-bold bg-primary/10"
-                : "border-transparent text-muted-foreground hover:text-foreground"
-            }`}
-          >
-            <Briefcase className="w-4 h-4" /> Experience ({experienceList.length})
-          </button>
-
-          <button
-            onClick={() => setActiveTab("skills")}
-            className={`px-3.5 py-2 text-xs font-mono uppercase tracking-wider rounded-t-xl transition-all border-b-2 flex items-center gap-2 whitespace-nowrap ${
-              activeTab === "skills"
-                ? "border-primary text-primary font-bold bg-primary/10"
-                : "border-transparent text-muted-foreground hover:text-foreground"
-            }`}
-          >
-            <Cpu className="w-4 h-4" /> Skills ({skillsList.length})
-          </button>
-
-          <button
-            onClick={() => setActiveTab("education")}
-            className={`px-3.5 py-2 text-xs font-mono uppercase tracking-wider rounded-t-xl transition-all border-b-2 flex items-center gap-2 whitespace-nowrap ${
-              activeTab === "education"
-                ? "border-primary text-primary font-bold bg-primary/10"
-                : "border-transparent text-muted-foreground hover:text-foreground"
-            }`}
-          >
-            <GraduationCap className="w-4 h-4" /> Education ({educationList.length})
-          </button>
-
-          <button
-            onClick={() => setActiveTab("messages")}
-            className={`px-3.5 py-2 text-xs font-mono uppercase tracking-wider rounded-t-xl transition-all border-b-2 flex items-center gap-2 whitespace-nowrap ${
-              activeTab === "messages"
-                ? "border-primary text-primary font-bold bg-primary/10"
-                : "border-transparent text-muted-foreground hover:text-foreground"
-            }`}
-          >
-            <MessageSquare className="w-4 h-4 text-emerald-500" /> Inbox ({messagesList.length})
-          </button>
+          {[
+            { id: "projects", label: "Projects", icon: FolderGit2, count: projectsList.length },
+            { id: "personal", label: "Personal Profile", icon: User, count: null },
+            { id: "experience", label: "Experience", icon: Briefcase, count: experienceList.length },
+            { id: "skills", label: "Skills", icon: Cpu, count: skillsList.length },
+            { id: "education", label: "Education", icon: GraduationCap, count: educationList.length },
+            { id: "highlights", label: "About Highlights", icon: Sparkles, count: highlightsList.length },
+            { id: "strengths", label: "Core Strengths", icon: Award, count: strengthsList.length },
+            { id: "messages", label: "Inbox", icon: MessageSquare, count: messagesList.length },
+          ].map((tab) => (
+            <button
+              key={tab.id}
+              onClick={() => setActiveTab(tab.id as typeof activeTab)}
+              className={`px-3.5 py-2 text-xs font-mono uppercase tracking-wider rounded-t-xl transition-all border-b-2 flex items-center gap-2 whitespace-nowrap ${
+                activeTab === tab.id
+                  ? "border-primary text-primary font-bold bg-primary/10"
+                  : "border-transparent text-muted-foreground hover:text-foreground"
+              }`}
+            >
+              <tab.icon className="w-4 h-4" /> {tab.label}{tab.count !== null ? ` (${tab.count})` : ""}
+            </button>
+          ))}
         </div>
 
         {/* TAB 1: PROJECTS SHOWCASE */}
@@ -439,7 +520,7 @@ export default function AdminDashboardPage() {
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
               <div>
                 <h2 className="text-xl font-bold">Projects Manager (RTK Query)</h2>
-                <p className="text-xs text-muted-foreground">Manage repo links, live demos, visibility types, and highlights.</p>
+                <p className="text-xs text-muted-foreground">Manage descriptions, tech stacks, highlights, repo/demo links, and visibility.</p>
               </div>
 
               <button
@@ -447,11 +528,13 @@ export default function AdminDashboardPage() {
                   setEditingProject({
                     name: "",
                     category: "Fintech",
+                    description: "",
                     project_type: "public",
-                    tech: ["C#", "TypeScript"],
-                    highlights: ["Scalable architecture"],
+                    tech: [],
+                    highlights: [],
                     github_url: "",
                     demo_url: "",
+                    featured: false,
                   })
                   setIsProjectModalOpen(true)
                 }}
@@ -472,20 +555,28 @@ export default function AdminDashboardPage() {
                       <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-secondary text-secondary-foreground">
                         {project.category}
                       </span>
-                      <span
-                        className={`text-[10px] font-mono uppercase px-2 py-0.5 rounded-full border ${
-                          project.project_type === "public"
-                            ? "bg-emerald-500/10 border-emerald-500/30 text-emerald-600 dark:text-emerald-400"
-                            : project.project_type === "customer"
-                            ? "bg-cyan-500/10 border-cyan-500/30 text-cyan-600 dark:text-cyan-400"
-                            : "bg-rose-500/10 border-rose-500/30 text-rose-600 dark:text-rose-400"
-                        }`}
-                      >
-                        {project.project_type}
-                      </span>
+                      <div className="flex items-center gap-1">
+                        {project.featured && (
+                          <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-primary/15 text-primary border border-primary/30">Featured</span>
+                        )}
+                        <span
+                          className={`text-[10px] font-mono uppercase px-2 py-0.5 rounded-full border ${
+                            project.project_type === "public"
+                              ? "bg-emerald-500/10 border-emerald-500/30 text-emerald-600 dark:text-emerald-400"
+                              : project.project_type === "customer"
+                              ? "bg-cyan-500/10 border-cyan-500/30 text-cyan-600 dark:text-cyan-400"
+                              : "bg-rose-500/10 border-rose-500/30 text-rose-600 dark:text-rose-400"
+                          }`}
+                        >
+                          {project.project_type}
+                        </span>
+                      </div>
                     </div>
 
                     <h3 className="font-bold text-lg">{project.name}</h3>
+                    {project.description && (
+                      <p className="text-xs text-muted-foreground leading-relaxed line-clamp-2">{project.description}</p>
+                    )}
 
                     <div className="flex flex-wrap gap-1">
                       {project.tech.map((t) => (
@@ -529,65 +620,127 @@ export default function AdminDashboardPage() {
         {/* TAB 2: PERSONAL INFO */}
         {activeTab === "personal" && personalForm && (
           <form onSubmit={handleSavePersonalInfo} className="max-w-3xl space-y-6 border border-border/80 bg-card/60 backdrop-blur-md rounded-2xl p-6">
-            <h2 className="text-xl font-bold mb-4">Personal Details & Bio</h2>
+            <h2 className="text-xl font-bold mb-4">Full Personal Profile</h2>
 
             <div className="grid sm:grid-cols-2 gap-4">
               <div>
-                <label className="block text-xs font-mono uppercase text-muted-foreground mb-1">Full Name</label>
+                <label className={labelClass}>Full Name</label>
                 <input
                   type="text"
                   value={personalForm.name}
                   onChange={(e) => setPersonalForm({ ...personalForm, name: e.target.value })}
-                  className="w-full px-3 py-2 rounded-xl border border-border/80 bg-background/60 text-sm"
+                  className={inputClass}
                 />
               </div>
               <div>
-                <label className="block text-xs font-mono uppercase text-muted-foreground mb-1">Job Title</label>
+                <label className={labelClass}>Job Title</label>
                 <input
                   type="text"
                   value={personalForm.title}
                   onChange={(e) => setPersonalForm({ ...personalForm, title: e.target.value })}
-                  className="w-full px-3 py-2 rounded-xl border border-border/80 bg-background/60 text-sm"
+                  className={inputClass}
                 />
               </div>
             </div>
 
             <div>
-              <label className="block text-xs font-mono uppercase text-muted-foreground mb-1">Tagline</label>
+              <label className={labelClass}>Tagline</label>
               <input
                 type="text"
                 value={personalForm.tagline}
                 onChange={(e) => setPersonalForm({ ...personalForm, tagline: e.target.value })}
-                className="w-full px-3 py-2 rounded-xl border border-border/80 bg-background/60 text-sm"
+                className={inputClass}
+              />
+            </div>
+
+            <div>
+              <label className={labelClass}>Professional Summary (shown on About section)</label>
+              <textarea
+                rows={5}
+                value={personalForm.summary || ""}
+                onChange={(e) => setPersonalForm({ ...personalForm, summary: e.target.value })}
+                className={inputClass}
               />
             </div>
 
             <div className="grid sm:grid-cols-2 gap-4">
               <div>
-                <label className="block text-xs font-mono uppercase text-muted-foreground mb-1">Email</label>
+                <label className={labelClass}>Location</label>
+                <input
+                  type="text"
+                  value={personalForm.location}
+                  onChange={(e) => setPersonalForm({ ...personalForm, location: e.target.value })}
+                  className={inputClass}
+                />
+              </div>
+              <div>
+                <label className={labelClass}>Email</label>
                 <input
                   type="email"
                   value={personalForm.email}
                   onChange={(e) => setPersonalForm({ ...personalForm, email: e.target.value })}
-                  className="w-full px-3 py-2 rounded-xl border border-border/80 bg-background/60 text-sm"
+                  className={inputClass}
                 />
               </div>
+            </div>
+
+            <div className="grid sm:grid-cols-2 gap-4">
               <div>
-                <label className="block text-xs font-mono uppercase text-muted-foreground mb-1">Phone</label>
+                <label className={labelClass}>Phone</label>
                 <input
                   type="text"
                   value={personalForm.phone}
                   onChange={(e) => setPersonalForm({ ...personalForm, phone: e.target.value })}
-                  className="w-full px-3 py-2 rounded-xl border border-border/80 bg-background/60 text-sm"
+                  className={inputClass}
                 />
               </div>
+              <div>
+                <label className={labelClass}>Portfolio URL</label>
+                <input
+                  type="text"
+                  value={personalForm.portfolio || ""}
+                  onChange={(e) => setPersonalForm({ ...personalForm, portfolio: e.target.value })}
+                  className={inputClass}
+                />
+              </div>
+            </div>
+
+            <div className="grid sm:grid-cols-2 gap-4">
+              <div>
+                <label className={labelClass}>GitHub URL</label>
+                <input
+                  type="text"
+                  value={personalForm.github || ""}
+                  onChange={(e) => setPersonalForm({ ...personalForm, github: e.target.value })}
+                  className={inputClass}
+                />
+              </div>
+              <div>
+                <label className={labelClass}>LinkedIn URL</label>
+                <input
+                  type="text"
+                  value={personalForm.linkedin || ""}
+                  onChange={(e) => setPersonalForm({ ...personalForm, linkedin: e.target.value })}
+                  className={inputClass}
+                />
+              </div>
+            </div>
+
+            <div>
+              <label className={labelClass}>Resume Website URL</label>
+              <input
+                type="text"
+                value={personalForm.resumeWebsite || ""}
+                onChange={(e) => setPersonalForm({ ...personalForm, resumeWebsite: e.target.value })}
+                className={inputClass}
+              />
             </div>
 
             <button
               type="submit"
               className="px-6 py-2.5 rounded-xl bg-primary text-primary-foreground text-xs font-semibold hover:opacity-90 transition-all shadow-md shadow-primary/20"
             >
-              Update Profile via RTK Query
+              Update Full Profile via RTK Query
             </button>
           </form>
         )}
@@ -598,7 +751,7 @@ export default function AdminDashboardPage() {
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
               <div>
                 <h2 className="text-xl font-bold">Work Experience</h2>
-                <p className="text-xs text-muted-foreground">Manage career history entries.</p>
+                <p className="text-xs text-muted-foreground">Manage career history, descriptions, tech stacks, responsibilities, and achievements.</p>
               </div>
 
               <button
@@ -607,10 +760,11 @@ export default function AdminDashboardPage() {
                     company: "",
                     role: "Software Engineer",
                     period: "2024 – Present",
+                    description: "",
                     keyProject: "",
-                    technologies: ["NestJS", "React.js"],
-                    responsibilities: [""],
-                    achievements: [""],
+                    technologies: [],
+                    responsibilities: [],
+                    achievements: [],
                   })
                   setIsExpModalOpen(true)
                 }}
@@ -631,6 +785,15 @@ export default function AdminDashboardPage() {
                     </div>
                   </div>
                   <p className="text-xs font-mono text-muted-foreground">{exp.period}</p>
+                  {exp.description && <p className="text-xs text-muted-foreground leading-relaxed">{exp.description}</p>}
+                  {exp.keyProject && <p className="text-xs text-primary font-mono">Key Project: {exp.keyProject}</p>}
+                  {exp.technologies.length > 0 && (
+                    <div className="flex flex-wrap gap-1 pt-1">
+                      {exp.technologies.map((t) => (
+                        <span key={t} className="text-[10px] font-mono px-1.5 py-0.5 rounded bg-muted/60 text-muted-foreground">{t}</span>
+                      ))}
+                    </div>
+                  )}
                 </div>
               ))}
             </div>
@@ -643,7 +806,7 @@ export default function AdminDashboardPage() {
             <div className="flex items-center justify-between">
               <h2 className="text-xl font-bold">Skill Categories</h2>
               <button
-                onClick={() => { setEditingSkillCat({ name: "", icon: "Code2", skills: ["TypeScript"] }); setIsSkillModalOpen(true); }}
+                onClick={() => { setEditingSkillCat({ name: "", icon: "Code2", skills: [] }); setIsSkillModalOpen(true); }}
                 className="px-4 py-2 rounded-xl bg-primary text-primary-foreground text-xs font-semibold"
               >
                 <Plus className="w-4 h-4 inline mr-1" /> Add Category
@@ -701,7 +864,71 @@ export default function AdminDashboardPage() {
           </div>
         )}
 
-        {/* TAB 6: MESSAGES */}
+        {/* TAB 6: ABOUT HIGHLIGHTS */}
+        {activeTab === "highlights" && (
+          <div className="space-y-6">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+              <div>
+                <h2 className="text-xl font-bold">About Section Highlight Cards</h2>
+                <p className="text-xs text-muted-foreground">The 4 feature cards shown next to your bio on the About section.</p>
+              </div>
+              <button
+                onClick={() => { setEditingHighlight({ icon: "Sparkles", title: "", description: "" }); setIsHighlightModalOpen(true); }}
+                className="px-4 py-2 rounded-xl bg-primary text-primary-foreground text-xs font-semibold flex items-center gap-1.5"
+              >
+                <Plus className="w-4 h-4" /> Add Highlight
+              </button>
+            </div>
+
+            <div className="grid md:grid-cols-2 gap-4 max-w-4xl">
+              {highlightsList.map((hl) => (
+                <div key={hl.id || hl.title} className="p-5 rounded-2xl border border-border/80 bg-card/60 flex items-center justify-between gap-3">
+                  <div>
+                    <p className="text-[10px] font-mono text-primary mb-0.5">{hl.icon}</p>
+                    <h3 className="font-bold text-sm">{hl.title}</h3>
+                    <p className="text-xs text-muted-foreground">{hl.description}</p>
+                  </div>
+                  <div className="flex gap-1 shrink-0">
+                    <button onClick={() => { setEditingHighlight(hl); setIsHighlightModalOpen(true); }} className="p-1.5 hover:bg-muted rounded-lg"><Edit3 className="w-3.5 h-3.5" /></button>
+                    <button onClick={() => handleDeleteHighlight(hl.id!)} className="p-1.5 hover:bg-rose-500/10 text-rose-500 rounded-lg"><Trash2 className="w-3.5 h-3.5" /></button>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* TAB 7: CORE STRENGTHS */}
+        {activeTab === "strengths" && (
+          <div className="space-y-6">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+              <div>
+                <h2 className="text-xl font-bold">Leadership & Core Strengths</h2>
+                <p className="text-xs text-muted-foreground">The strengths list shown on the Education section.</p>
+              </div>
+              <button
+                onClick={() => { setEditingStrength({ content: "" }); setIsStrengthModalOpen(true); }}
+                className="px-4 py-2 rounded-xl bg-primary text-primary-foreground text-xs font-semibold flex items-center gap-1.5"
+              >
+                <Plus className="w-4 h-4" /> Add Strength
+              </button>
+            </div>
+
+            <div className="space-y-3 max-w-3xl">
+              {strengthsList.map((s) => (
+                <div key={s.id} className="p-4 rounded-2xl border border-border/80 bg-card/60 flex items-start justify-between gap-3">
+                  <p className="text-sm text-muted-foreground leading-relaxed">{s.content}</p>
+                  <div className="flex gap-1 shrink-0">
+                    <button onClick={() => { setEditingStrength(s); setIsStrengthModalOpen(true); }} className="p-1.5 hover:bg-muted rounded-lg"><Edit3 className="w-3.5 h-3.5" /></button>
+                    <button onClick={() => handleDeleteStrength(s.id!)} className="p-1.5 hover:bg-rose-500/10 text-rose-500 rounded-lg"><Trash2 className="w-3.5 h-3.5" /></button>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* TAB 8: MESSAGES */}
         {activeTab === "messages" && (
           <div className="space-y-6 max-w-4xl">
             <h2 className="text-xl font-bold">Contact Inbox</h2>
@@ -723,22 +950,29 @@ export default function AdminDashboardPage() {
 
       {/* PROJECT MODAL */}
       {isProjectModalOpen && editingProject && (
-        <div className="fixed inset-0 z-50 bg-background/80 backdrop-blur-md flex items-center justify-center p-4">
-          <div className="border border-border/80 bg-card/95 rounded-3xl p-6 max-w-lg w-full space-y-4 shadow-2xl">
+        <div className="fixed inset-0 z-50 bg-background/80 backdrop-blur-md flex items-center justify-center p-4 overflow-y-auto">
+          <div className="border border-border/80 bg-card/95 rounded-3xl p-6 max-w-lg w-full space-y-4 shadow-2xl my-8">
             <div className="flex justify-between items-center pb-2 border-b border-border/60">
               <h3 className="font-bold text-base">{editingProject.id ? "Edit Project" : "Add Project"}</h3>
               <button onClick={() => setIsProjectModalOpen(false)}><X className="w-5 h-5" /></button>
             </div>
             <form onSubmit={handleSaveProject} className="space-y-3 text-xs">
-              <input type="text" required placeholder="Project Name" value={editingProject.name || ""} onChange={(e) => setEditingProject({ ...editingProject, name: e.target.value })} className="w-full p-2.5 rounded-xl border bg-background/50" />
-              <input type="text" required placeholder="Category" value={editingProject.category || ""} onChange={(e) => setEditingProject({ ...editingProject, category: e.target.value })} className="w-full p-2.5 rounded-xl border bg-background/50" />
-              <select value={editingProject.project_type || "public"} onChange={(e) => setEditingProject({ ...editingProject, project_type: e.target.value as ProjectType })} className="w-full p-2.5 rounded-xl border bg-background/50">
+              <input type="text" required placeholder="Project Name" value={editingProject.name || ""} onChange={(e) => setEditingProject({ ...editingProject, name: e.target.value })} className={inputClass} />
+              <input type="text" required placeholder="Category (e.g. Fintech, Enterprise)" value={editingProject.category || ""} onChange={(e) => setEditingProject({ ...editingProject, category: e.target.value })} className={inputClass} />
+              <textarea rows={3} placeholder="Description - a short paragraph about the project" value={editingProject.description || ""} onChange={(e) => setEditingProject({ ...editingProject, description: e.target.value })} className={inputClass} />
+              <input type="text" placeholder="Tech Stack (comma separated, e.g. React.js, Node.js, PostgreSQL)" value={arrayToCsv(editingProject.tech)} onChange={(e) => setEditingProject({ ...editingProject, tech: csvToArray(e.target.value) })} className={inputClass} />
+              <textarea rows={4} placeholder={"Highlights - one per line\ne.g. Real-time notifications\nScalable backend APIs"} value={arrayToLines(editingProject.highlights)} onChange={(e) => setEditingProject({ ...editingProject, highlights: linesToArray(e.target.value) })} className={inputClass} />
+              <select value={editingProject.project_type || "public"} onChange={(e) => setEditingProject({ ...editingProject, project_type: e.target.value as ProjectType })} className={inputClass}>
                 <option value="public">Public</option>
                 <option value="customer">Client Work</option>
                 <option value="private">Private</option>
               </select>
-              <input type="text" placeholder="GitHub URL" value={editingProject.github_url || ""} onChange={(e) => setEditingProject({ ...editingProject, github_url: e.target.value })} className="w-full p-2.5 rounded-xl border bg-background/50" />
-              <input type="text" placeholder="Demo URL" value={editingProject.demo_url || ""} onChange={(e) => setEditingProject({ ...editingProject, demo_url: e.target.value })} className="w-full p-2.5 rounded-xl border bg-background/50" />
+              <input type="text" placeholder="GitHub URL" value={editingProject.github_url || ""} onChange={(e) => setEditingProject({ ...editingProject, github_url: e.target.value })} className={inputClass} />
+              <input type="text" placeholder="Demo URL" value={editingProject.demo_url || ""} onChange={(e) => setEditingProject({ ...editingProject, demo_url: e.target.value })} className={inputClass} />
+              <label className="flex items-center gap-2 text-xs text-muted-foreground pt-1">
+                <input type="checkbox" checked={editingProject.featured ?? false} onChange={(e) => setEditingProject({ ...editingProject, featured: e.target.checked })} className="w-4 h-4" />
+                Featured project
+              </label>
               <div className="flex justify-end gap-2 pt-2">
                 <button type="button" onClick={() => setIsProjectModalOpen(false)} className="px-4 py-2 border rounded-xl">Cancel</button>
                 <button type="submit" className="px-4 py-2 bg-primary text-primary-foreground font-bold rounded-xl">Save</button>
@@ -750,16 +984,21 @@ export default function AdminDashboardPage() {
 
       {/* EXPERIENCE MODAL */}
       {isExpModalOpen && editingExp && (
-        <div className="fixed inset-0 z-50 bg-background/80 backdrop-blur-md flex items-center justify-center p-4">
-          <div className="border border-border/80 bg-card/95 rounded-3xl p-6 max-w-lg w-full space-y-4 shadow-2xl">
+        <div className="fixed inset-0 z-50 bg-background/80 backdrop-blur-md flex items-center justify-center p-4 overflow-y-auto">
+          <div className="border border-border/80 bg-card/95 rounded-3xl p-6 max-w-lg w-full space-y-4 shadow-2xl my-8">
             <div className="flex justify-between items-center pb-2 border-b border-border/60">
               <h3 className="font-bold text-base">{editingExp.id ? "Edit Experience" : "Add Experience"}</h3>
               <button onClick={() => setIsExpModalOpen(false)}><X className="w-5 h-5" /></button>
             </div>
             <form onSubmit={handleSaveExp} className="space-y-3 text-xs">
-              <input type="text" required placeholder="Company" value={editingExp.company || ""} onChange={(e) => setEditingExp({ ...editingExp, company: e.target.value })} className="w-full p-2.5 rounded-xl border bg-background/50" />
-              <input type="text" required placeholder="Role Title" value={editingExp.role || ""} onChange={(e) => setEditingExp({ ...editingExp, role: e.target.value })} className="w-full p-2.5 rounded-xl border bg-background/50" />
-              <input type="text" placeholder="Period (e.g. 2024 - Present)" value={editingExp.period || ""} onChange={(e) => setEditingExp({ ...editingExp, period: e.target.value })} className="w-full p-2.5 rounded-xl border bg-background/50" />
+              <input type="text" required placeholder="Company" value={editingExp.company || ""} onChange={(e) => setEditingExp({ ...editingExp, company: e.target.value })} className={inputClass} />
+              <input type="text" required placeholder="Role Title" value={editingExp.role || ""} onChange={(e) => setEditingExp({ ...editingExp, role: e.target.value })} className={inputClass} />
+              <input type="text" placeholder="Period (e.g. 2024 - Present)" value={editingExp.period || ""} onChange={(e) => setEditingExp({ ...editingExp, period: e.target.value })} className={inputClass} />
+              <textarea rows={2} placeholder="Short description / blurb for this role" value={editingExp.description || ""} onChange={(e) => setEditingExp({ ...editingExp, description: e.target.value })} className={inputClass} />
+              <input type="text" placeholder="Key Project" value={editingExp.keyProject || ""} onChange={(e) => setEditingExp({ ...editingExp, keyProject: e.target.value })} className={inputClass} />
+              <input type="text" placeholder="Technologies (comma separated)" value={arrayToCsv(editingExp.technologies)} onChange={(e) => setEditingExp({ ...editingExp, technologies: csvToArray(e.target.value) })} className={inputClass} />
+              <textarea rows={4} placeholder={"Responsibilities - one per line"} value={arrayToLines(editingExp.responsibilities)} onChange={(e) => setEditingExp({ ...editingExp, responsibilities: linesToArray(e.target.value) })} className={inputClass} />
+              <textarea rows={4} placeholder={"Achievements - one per line"} value={arrayToLines(editingExp.achievements)} onChange={(e) => setEditingExp({ ...editingExp, achievements: linesToArray(e.target.value) })} className={inputClass} />
               <div className="flex justify-end gap-2 pt-2">
                 <button type="button" onClick={() => setIsExpModalOpen(false)} className="px-4 py-2 border rounded-xl">Cancel</button>
                 <button type="submit" className="px-4 py-2 bg-primary text-primary-foreground font-bold rounded-xl">Save</button>
@@ -778,8 +1017,9 @@ export default function AdminDashboardPage() {
               <button onClick={() => setIsSkillModalOpen(false)}><X className="w-5 h-5" /></button>
             </div>
             <form onSubmit={handleSaveSkillCat} className="space-y-3 text-xs">
-              <input type="text" required placeholder="Category Name" value={editingSkillCat.name || ""} onChange={(e) => setEditingSkillCat({ ...editingSkillCat, name: e.target.value })} className="w-full p-2.5 rounded-xl border bg-background/50" />
-              <textarea rows={3} placeholder="Skills (comma separated)" value={editingSkillCat.skills ? editingSkillCat.skills.join(", ") : ""} onChange={(e) => setEditingSkillCat({ ...editingSkillCat, skills: e.target.value.split(",").map(s => s.trim()).filter(Boolean) })} className="w-full p-2.5 rounded-xl border bg-background/50" />
+              <input type="text" required placeholder="Category Name" value={editingSkillCat.name || ""} onChange={(e) => setEditingSkillCat({ ...editingSkillCat, name: e.target.value })} className={inputClass} />
+              <input type="text" placeholder="Lucide icon name (e.g. Code2, Server, Database)" value={editingSkillCat.icon || ""} onChange={(e) => setEditingSkillCat({ ...editingSkillCat, icon: e.target.value })} className={inputClass} />
+              <textarea rows={3} placeholder="Skills (comma separated)" value={editingSkillCat.skills ? editingSkillCat.skills.join(", ") : ""} onChange={(e) => setEditingSkillCat({ ...editingSkillCat, skills: e.target.value.split(",").map(s => s.trim()).filter(Boolean) })} className={inputClass} />
               <div className="flex justify-end gap-2 pt-2">
                 <button type="button" onClick={() => setIsSkillModalOpen(false)} className="px-4 py-2 border rounded-xl">Cancel</button>
                 <button type="submit" className="px-4 py-2 bg-primary text-primary-foreground font-bold rounded-xl">Save</button>
@@ -798,11 +1038,51 @@ export default function AdminDashboardPage() {
               <button onClick={() => setIsEduModalOpen(false)}><X className="w-5 h-5" /></button>
             </div>
             <form onSubmit={handleSaveEdu} className="space-y-3 text-xs">
-              <input type="text" required placeholder="Degree / Diploma" value={editingEdu.degree || ""} onChange={(e) => setEditingEdu({ ...editingEdu, degree: e.target.value })} className="w-full p-2.5 rounded-xl border bg-background/50" />
-              <input type="text" required placeholder="Institution" value={editingEdu.institution || ""} onChange={(e) => setEditingEdu({ ...editingEdu, institution: e.target.value })} className="w-full p-2.5 rounded-xl border bg-background/50" />
-              <input type="text" placeholder="Year" value={editingEdu.year || ""} onChange={(e) => setEditingEdu({ ...editingEdu, year: e.target.value })} className="w-full p-2.5 rounded-xl border bg-background/50" />
+              <input type="text" required placeholder="Degree / Diploma" value={editingEdu.degree || ""} onChange={(e) => setEditingEdu({ ...editingEdu, degree: e.target.value })} className={inputClass} />
+              <input type="text" required placeholder="Institution" value={editingEdu.institution || ""} onChange={(e) => setEditingEdu({ ...editingEdu, institution: e.target.value })} className={inputClass} />
+              <input type="text" placeholder="Year" value={editingEdu.year || ""} onChange={(e) => setEditingEdu({ ...editingEdu, year: e.target.value })} className={inputClass} />
               <div className="flex justify-end gap-2 pt-2">
                 <button type="button" onClick={() => setIsEduModalOpen(false)} className="px-4 py-2 border rounded-xl">Cancel</button>
+                <button type="submit" className="px-4 py-2 bg-primary text-primary-foreground font-bold rounded-xl">Save</button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* HIGHLIGHT MODAL */}
+      {isHighlightModalOpen && editingHighlight && (
+        <div className="fixed inset-0 z-50 bg-background/80 backdrop-blur-md flex items-center justify-center p-4">
+          <div className="border border-border/80 bg-card/95 rounded-3xl p-6 max-w-md w-full space-y-4 shadow-2xl">
+            <div className="flex justify-between items-center pb-2 border-b border-border/60">
+              <h3 className="font-bold text-base">{editingHighlight.id ? "Edit Highlight" : "Add Highlight"}</h3>
+              <button onClick={() => setIsHighlightModalOpen(false)}><X className="w-5 h-5" /></button>
+            </div>
+            <form onSubmit={handleSaveHighlight} className="space-y-3 text-xs">
+              <input type="text" placeholder="Lucide icon name (e.g. Server, Shield, Database, Code2)" value={editingHighlight.icon || ""} onChange={(e) => setEditingHighlight({ ...editingHighlight, icon: e.target.value })} className={inputClass} />
+              <input type="text" required placeholder="Title (e.g. Backend Systems)" value={editingHighlight.title || ""} onChange={(e) => setEditingHighlight({ ...editingHighlight, title: e.target.value })} className={inputClass} />
+              <textarea rows={2} required placeholder="Description" value={editingHighlight.description || ""} onChange={(e) => setEditingHighlight({ ...editingHighlight, description: e.target.value })} className={inputClass} />
+              <div className="flex justify-end gap-2 pt-2">
+                <button type="button" onClick={() => setIsHighlightModalOpen(false)} className="px-4 py-2 border rounded-xl">Cancel</button>
+                <button type="submit" className="px-4 py-2 bg-primary text-primary-foreground font-bold rounded-xl">Save</button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* STRENGTH MODAL */}
+      {isStrengthModalOpen && editingStrength && (
+        <div className="fixed inset-0 z-50 bg-background/80 backdrop-blur-md flex items-center justify-center p-4">
+          <div className="border border-border/80 bg-card/95 rounded-3xl p-6 max-w-md w-full space-y-4 shadow-2xl">
+            <div className="flex justify-between items-center pb-2 border-b border-border/60">
+              <h3 className="font-bold text-base">{editingStrength.id ? "Edit Strength" : "Add Strength"}</h3>
+              <button onClick={() => setIsStrengthModalOpen(false)}><X className="w-5 h-5" /></button>
+            </div>
+            <form onSubmit={handleSaveStrength} className="space-y-3 text-xs">
+              <textarea rows={4} required placeholder="Strength / leadership statement" value={editingStrength.content || ""} onChange={(e) => setEditingStrength({ ...editingStrength, content: e.target.value })} className={inputClass} />
+              <div className="flex justify-end gap-2 pt-2">
+                <button type="button" onClick={() => setIsStrengthModalOpen(false)} className="px-4 py-2 border rounded-xl">Cancel</button>
                 <button type="submit" className="px-4 py-2 bg-primary text-primary-foreground font-bold rounded-xl">Save</button>
               </div>
             </form>

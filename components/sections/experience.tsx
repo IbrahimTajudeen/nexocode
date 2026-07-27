@@ -1,25 +1,16 @@
 "use client"
 
-import { useState, useEffect, useRef } from "react"
+import { useRef } from "react"
 import { motion, useInView } from "framer-motion"
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
-import { fetchWorkExperience } from "@/lib/data-provider"
-import { WorkExperience } from "@/types/resume"
+import { useGetWorkExperienceQuery } from "@/lib/redux/api/portfolioApi"
 import { Building2, Calendar, CheckCircle2, Rocket, Briefcase } from "lucide-react"
 
 export default function Experience() {
   const ref = useRef(null)
   const isInView = useInView(ref, { once: true, margin: "-100px" })
-  const [experiences, setExperiences] = useState<WorkExperience[]>([])
-
-  useEffect(() => {
-    async function loadData() {
-      const data = await fetchWorkExperience()
-      setExperiences(data)
-    }
-    loadData()
-  }, [])
+  const { data: experiences = [] } = useGetWorkExperienceQuery()
 
   return (
     <section id="experience" className="py-20 lg:py-32 relative bg-background">
@@ -89,6 +80,9 @@ export default function Experience() {
                       </div>
                     </CardHeader>
                     <CardContent className="space-y-4">
+                      {exp.description && (
+                        <p className="text-xs sm:text-sm text-muted-foreground leading-relaxed">{exp.description}</p>
+                      )}
                       <div>
                         <h4 className="text-xs font-mono uppercase text-foreground mb-2 flex items-center font-bold">
                           <Rocket className="w-4 h-4 mr-2 text-primary" />

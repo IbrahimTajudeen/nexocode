@@ -4,41 +4,43 @@ import { useState, useRef } from "react"
 import { motion, useInView } from "framer-motion"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
-import { personalInfo } from "@/lib/resume-data"
-import { useAddContactMessageMutation } from "@/lib/redux/api/portfolioApi"
+import { personalInfo as defaultPersonalInfo } from "@/lib/resume-data"
+import { useAddContactMessageMutation, useGetPersonalInfoQuery } from "@/lib/redux/api/portfolioApi"
 import { Mail, MapPin, Github, Linkedin, Globe, Send, CheckCircle2, AlertCircle } from "lucide-react"
 import Link from "next/link"
-
-const contactLinks = [
-  {
-    icon: Mail,
-    label: "Email",
-    value: personalInfo.email,
-    href: `mailto:${personalInfo.email}`,
-  },
-  {
-    icon: Github,
-    label: "GitHub",
-    value: "@ibrahimtajudeen",
-    href: personalInfo.github,
-  },
-  {
-    icon: Linkedin,
-    label: "LinkedIn",
-    value: "Ibrahim Tajudeen",
-    href: personalInfo.linkedin,
-  },
-  {
-    icon: Globe,
-    label: "Portfolio",
-    value: "nexocode.vercel.app",
-    href: personalInfo.portfolio,
-  },
-]
 
 export default function Contact() {
   const ref = useRef(null)
   const isInView = useInView(ref, { once: true, margin: "-100px" })
+
+  const { data: personalInfo = defaultPersonalInfo } = useGetPersonalInfoQuery()
+
+  const contactLinks = [
+    {
+      icon: Mail,
+      label: "Email",
+      value: personalInfo.email,
+      href: `mailto:${personalInfo.email}`,
+    },
+    {
+      icon: Github,
+      label: "GitHub",
+      value: "@ibrahimtajudeen",
+      href: personalInfo.github,
+    },
+    {
+      icon: Linkedin,
+      label: "LinkedIn",
+      value: "Ibrahim Tajudeen",
+      href: personalInfo.linkedin,
+    },
+    {
+      icon: Globe,
+      label: "Portfolio",
+      value: "nexocode.vercel.app",
+      href: personalInfo.portfolio,
+    },
+  ]
 
   const [formData, setFormData] = useState({ name: "", email: "", subject: "", message: "" })
   const [addContactMessage, { isLoading: submitting }] = useAddContactMessageMutation()

@@ -1,11 +1,14 @@
 "use client"
 
-import { personalInfo } from "@/lib/resume-data"
+import { useGetPersonalInfoQuery } from "@/lib/redux/api/portfolioApi"
+import { personalInfo as defaultPersonalInfo } from "@/lib/resume-data"
 import { Separator } from "@/components/ui/separator"
 import { Github, Linkedin, Globe, Heart, FileText, ShieldCheck } from "lucide-react"
 import Link from "next/link"
 
 export default function Footer() {
+  const { data: personalInfo = defaultPersonalInfo } = useGetPersonalInfoQuery()
+
   return (
     <footer className="py-12 border-t border-border/80 bg-background/80 relative">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">

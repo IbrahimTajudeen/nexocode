@@ -1,47 +1,24 @@
 "use client"
 
-import { useState, useEffect, useRef } from "react"
+import { useRef } from "react"
 import { motion, useInView } from "framer-motion"
 import { Card, CardContent } from "@/components/ui/card"
-import { fetchPersonalInfo } from "@/lib/data-provider"
-import { PersonalInfo } from "@/types/resume"
-import { Code2, Database, Shield, Server, User } from "lucide-react"
+import { useGetPersonalInfoQuery, useGetHighlightsQuery } from "@/lib/redux/api/portfolioApi"
+import { Code2, Database, Shield, Server, User, Sparkles } from "lucide-react"
 
-const highlights = [
-  {
-    icon: Server,
-    title: "Backend Systems",
-    description: "Scalable APIs, Microservices & Distributed Architecture",
-  },
-  {
-    icon: Database,
-    title: "Fintech Infrastructure",
-    description: "Payment Systems, Virtual Accounts & Ledger Wallets",
-  },
-  {
-    icon: Code2,
-    title: "Full Stack Engineering",
-    description: "Cross-Platform Web, Desktop & Mobile Systems",
-  },
-  {
-    icon: Shield,
-    title: "Security & Auth",
-    description: "RBAC, JWT, Row-Level Security & Fraud Prevention",
-  },
-]
+const iconMap: Record<string, React.ElementType> = {
+  Code2,
+  Database,
+  Shield,
+  Server,
+  Sparkles,
+}
 
 export default function About() {
   const ref = useRef(null)
   const isInView = useInView(ref, { once: true, margin: "-100px" })
-  const [info, setInfo] = useState<PersonalInfo | null>(null)
-
-  useEffect(() => {
-    async function loadData() {
-      const data = await fetchPersonalInfo()
-      setInfo(data)
-    }
-    loadData()
-  }, [])
+  const { data: info } = useGetPersonalInfoQuery()
+  const { data: highlights = [] } = useGetHighlightsQuery()
 
   return (
     <section id="about" className="py-20 lg:py-32 relative bg-background">
@@ -83,24 +60,27 @@ export default function About() {
 
           {/* Highlights Grid */}
           <div className="grid grid-cols-2 gap-4">
-            {highlights.map((item, index) => (
-              <motion.div
-                key={item.title}
-                initial={{ opacity: 0, y: 30 }}
-                animate={isInView ? { opacity: 1, y: 0 } : {}}
-                transition={{ duration: 0.5, delay: 0.3 + index * 0.1 }}
-              >
-                <Card className="h-full border border-border/80 bg-card/60 backdrop-blur-md hover:border-primary/50 transition-all group cursor-default">
-                  <CardContent className="p-6 flex flex-col items-center text-center">
-                    <div className="w-12 h-12 rounded-xl bg-primary/10 border border-primary/30 flex items-center justify-center mb-3 group-hover:scale-110 transition-transform text-primary">
-                      <item.icon className="w-6 h-6" />
-                    </div>
-                    <h3 className="font-bold text-foreground mb-1 text-sm">{item.title}</h3>
-                    <p className="text-xs text-muted-foreground leading-relaxed">{item.description}</p>
-                  </CardContent>
-                </Card>
-              </motion.div>
-            ))}
+            {highlights.map((item, index) => {
+              const IconComponent = iconMap[item.icon] || Sparkles
+              return (
+                <motion.div
+                  key={item.id || item.title}
+                  initial={{ opacity: 0, y: 30 }}
+                  animate={isInView ? { opacity: 1, y: 0 } : {}}
+                  transition={{ duration: 0.5, delay: 0.3 + index * 0.1 }}
+                >
+                  <Card className="h-full border border-border/80 bg-card/60 backdrop-blur-md hover:border-primary/50 transition-all group cursor-default">
+                    <CardContent className="p-6 flex flex-col items-center text-center">
+                      <div className="w-12 h-12 rounded-xl bg-primary/10 border border-primary/30 flex items-center justify-center mb-3 group-hover:scale-110 transition-transform text-primary">
+                        <IconComponent className="w-6 h-6" />
+                      </div>
+                      <h3 className="font-bold text-foreground mb-1 text-sm">{item.title}</h3>
+                      <p className="text-xs text-muted-foreground leading-relaxed">{item.description}</p>
+                    </CardContent>
+                  </Card>
+                </motion.div>
+              )
+            })}
           </div>
         </div>
       </div>

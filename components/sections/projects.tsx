@@ -165,6 +165,9 @@ export default function Projects() {
                       <CardTitle className="text-xl font-bold group-hover:text-primary transition-colors">
                         {project.name}
                       </CardTitle>
+                      {project.description && (
+                        <p className="text-xs text-muted-foreground leading-relaxed mt-1.5">{project.description}</p>
+                      )}
                     </CardHeader>
 
                     <CardContent className="space-y-4 flex-1 flex flex-col justify-between">
