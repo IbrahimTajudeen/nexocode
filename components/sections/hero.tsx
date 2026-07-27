@@ -1,22 +1,35 @@
 "use client"
 
+import { useState, useEffect } from "react"
 import { motion } from "framer-motion"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
-import { personalInfo } from "@/lib/resume-data"
-import { Github, Linkedin, Globe, Mail, ArrowDown, MapPin } from "lucide-react"
+import { fetchPersonalInfo } from "@/lib/data-provider"
+import { PersonalInfo } from "@/types/resume"
+import { Github, Linkedin, Globe, Mail, ArrowDown, MapPin, Sparkles } from "lucide-react"
 import Link from "next/link"
 
 export default function Hero() {
+  const [info, setInfo] = useState<PersonalInfo | null>(null)
+
+  useEffect(() => {
+    async function loadInfo() {
+      const data = await fetchPersonalInfo()
+      setInfo(data)
+    }
+    loadInfo()
+  }, [])
+
+  if (!info) return null
+
   return (
     <section
       id="about"
-      className="relative min-h-screen flex items-center justify-center overflow-hidden pt-16"
+      className="relative min-h-screen flex items-center justify-center overflow-hidden pt-24 pb-12"
     >
-      {/* Background Elements */}
-      <div className="absolute inset-0 bg-gradient-to-br from-blue-50/50 via-transparent to-purple-50/50 dark:from-blue-950/20 dark:via-transparent dark:to-purple-950/20" />
-      <div className="absolute top-20 left-10 w-72 h-72 bg-blue-400/10 rounded-full blur-3xl animate-pulse-slow" />
-      <div className="absolute bottom-20 right-10 w-96 h-96 bg-purple-400/10 rounded-full blur-3xl animate-pulse-slow" />
+      {/* Dynamic Background Glow Orbs */}
+      <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-primary/15 rounded-full blur-3xl animate-pulse" />
+      <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-primary/10 rounded-full blur-3xl animate-pulse" />
 
       <div className="relative z-10 max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
         <motion.div
@@ -25,11 +38,11 @@ export default function Hero() {
           transition={{ duration: 0.6 }}
         >
           <Badge
-            variant="secondary"
-            className="mb-6 px-4 py-1.5 text-sm font-medium rounded-full bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-300"
+            variant="outline"
+            className="mb-6 px-4 py-1.5 text-xs font-mono rounded-full border-primary/40 bg-primary/10 text-primary uppercase tracking-widest inline-flex items-center gap-1.5 shadow-lg shadow-primary/10"
           >
-            <MapPin className="w-3 h-3 mr-1" />
-            {personalInfo.location}
+            <MapPin className="w-3.5 h-3.5" />
+            {info.location}
           </Badge>
         </motion.div>
 
@@ -37,27 +50,27 @@ export default function Hero() {
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, delay: 0.1 }}
-          className="text-5xl sm:text-6xl lg:text-7xl font-bold tracking-tight mb-4"
+          className="text-5xl sm:text-7xl lg:text-8xl font-black tracking-tight mb-4"
         >
-          <span className="gradient-text">{personalInfo.name}</span>
+          <span className="gradient-text">{info.name}</span>
         </motion.h1>
 
         <motion.h2
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, delay: 0.2 }}
-          className="text-2xl sm:text-3xl font-semibold text-foreground mb-4"
+          className="text-2xl sm:text-3xl font-bold text-foreground mb-4 tracking-wide"
         >
-          {personalInfo.title}
+          {info.title}
         </motion.h2>
 
         <motion.p
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, delay: 0.3 }}
-          className="text-lg sm:text-xl text-muted-foreground max-w-2xl mx-auto mb-8"
+          className="text-base sm:text-lg text-muted-foreground max-w-3xl mx-auto mb-10 leading-relaxed font-mono"
         >
-          {personalInfo.tagline}
+          {info.tagline}
         </motion.p>
 
         <motion.div
@@ -66,75 +79,84 @@ export default function Hero() {
           transition={{ duration: 0.6, delay: 0.4 }}
           className="flex flex-wrap justify-center gap-3 mb-10"
         >
-          <Button
-            variant="outline"
-            size="sm"
-            className="rounded-full"
-            asChild
-          >
-            <Link href={personalInfo.github} target="_blank">
-              <Github className="w-4 h-4 mr-2" />
-              GitHub
-            </Link>
-          </Button>
-          <Button
-            variant="outline"
-            size="sm"
-            className="rounded-full"
-            asChild
-          >
-            <Link href={personalInfo.linkedin} target="_blank">
-              <Linkedin className="w-4 h-4 mr-2" />
-              LinkedIn
-            </Link>
-          </Button>
-          <Button
-            variant="outline"
-            size="sm"
-            className="rounded-full"
-            asChild
-          >
-            <Link href={personalInfo.portfolio} target="_blank">
-              <Globe className="w-4 h-4 mr-2" />
-              Portfolio
-            </Link>
-          </Button>
-          <Button
-            variant="outline"
-            size="sm"
-            className="rounded-full"
-            asChild
-          >
-            <Link href={`mailto:${personalInfo.email}`}>
-              <Mail className="w-4 h-4 mr-2" />
-              Email
-            </Link>
-          </Button>
+          {info.github && (
+            <Button
+              variant="outline"
+              size="sm"
+              className="rounded-full border-border/80 hover:border-primary hover:text-primary transition-all text-xs"
+              asChild
+            >
+              <Link href={info.github} target="_blank">
+                <Github className="w-3.5 h-3.5 mr-2 text-primary" />
+                GitHub
+              </Link>
+            </Button>
+          )}
+          {info.linkedin && (
+            <Button
+              variant="outline"
+              size="sm"
+              className="rounded-full border-border/80 hover:border-primary hover:text-primary transition-all text-xs"
+              asChild
+            >
+              <Link href={info.linkedin} target="_blank">
+                <Linkedin className="w-3.5 h-3.5 mr-2 text-primary" />
+                LinkedIn
+              </Link>
+            </Button>
+          )}
+          {info.portfolio && (
+            <Button
+              variant="outline"
+              size="sm"
+              className="rounded-full border-border/80 hover:border-primary hover:text-primary transition-all text-xs"
+              asChild
+            >
+              <Link href={info.portfolio} target="_blank">
+                <Globe className="w-3.5 h-3.5 mr-2 text-primary" />
+                Portfolio
+              </Link>
+            </Button>
+          )}
+          {info.email && (
+            <Button
+              variant="outline"
+              size="sm"
+              className="rounded-full border-border/80 hover:border-primary hover:text-primary transition-all text-xs"
+              asChild
+            >
+              <Link href={`mailto:${info.email}`}>
+                <Mail className="w-3.5 h-3.5 mr-2 text-primary" />
+                Email
+              </Link>
+            </Button>
+          )}
         </motion.div>
 
         <motion.div
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, delay: 0.5 }}
-          className="flex justify-center gap-4 mb-20"
+          className="flex justify-center gap-4 mb-16"
         >
           <Button
             size="lg"
-            className="rounded-full bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white shadow-lg hover:shadow-xl transition-all"
+            className="rounded-full bg-primary text-primary-foreground hover:opacity-90 shadow-lg shadow-primary/25 font-semibold px-8 transition-all scale-105"
             asChild
           >
-            <Link href="/api/resume" target="_blank">
-              Download Resume
+            <Link href="#projects">
+              <Sparkles className="w-4 h-4 mr-2" />
+              Explore Portfolio
             </Link>
           </Button>
           <Button
             variant="outline"
             size="lg"
-            className="rounded-full"
+            className="rounded-full border-primary/40 hover:bg-primary/10 text-foreground px-8 font-semibold"
             asChild
           >
-            <Link href="#projects">
-              View Projects
+            <Link href="#contact">
+              Get In Touch
             </Link>
           </Button>
         </motion.div>
@@ -143,13 +165,13 @@ export default function Hero() {
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ duration: 0.6, delay: 1 }}
-          className="absolute bottom-10 left-1/2 -translate-x-1/2"
+          className="absolute bottom-6 left-1/2 -translate-x-1/2"
         >
           <motion.div
-            animate={{ y: [0, 10, 0] }}
+            animate={{ y: [0, 8, 0] }}
             transition={{ duration: 2, repeat: Infinity }}
           >
-            <ArrowDown className="w-6 h-6 text-muted-foreground" />
+            <ArrowDown className="w-5 h-5 text-muted-foreground/60" />
           </motion.div>
         </motion.div>
       </div>

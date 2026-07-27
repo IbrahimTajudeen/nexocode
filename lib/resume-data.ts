@@ -11,44 +11,50 @@ export const personalInfo: PersonalInfo = {
   linkedin: "https://www.linkedin.com/in/ibrahim-tajudeen-7328312a5",
   email: "donslice6@gmail.com",
   phone: "+234 813 216 6576",
+  summary: `Software Engineer experienced in building scalable backend systems, fintech infrastructure, AI-powered platforms, and cross-platform applications across web, desktop, and mobile environments. Skilled in designing secure APIs, payment systems, real-time architectures, authentication systems, and modern frontend experiences using technologies such as C#, .NET, NestJS, React.js, and PostgreSQL.`,
 }
 
-export const professionalSummary = `Software Engineer experienced in building scalable backend systems, fintech infrastructure, AI-powered platforms, and cross-platform applications across web, desktop, and mobile environments. Skilled in designing secure APIs, payment systems, real-time architectures, authentication systems, and modern frontend experiences using technologies such as C#, .NET, NestJS, React.js, and PostgreSQL.
-
-Experienced in leading end-to-end software development lifecycle processes including architecture design, database modeling, API development, frontend engineering, deployment workflows, and production optimization. Strong background in fintech systems, secure transaction handling, AI integrations, and enterprise application development.`
+export const professionalSummary = personalInfo.summary!
 
 export const skillCategories: SkillCategory[] = [
   {
+    id: "cat-1",
     name: "Languages",
     skills: ["JavaScript", "TypeScript", "C/C++", "C#", "Java", "Python", "SQL"],
     icon: "Code2",
   },
   {
+    id: "cat-2",
     name: "Frontend & Cross Platform",
     skills: ["React.js", "Next.js", "Blazor", "React Native", "Flutter", "Xamarin.Forms", ".NET MAUI", "WPF", "UWP", "WinForms", "Tailwind CSS", "Bootstrap", "EJS", "PUG", "Handlebars"],
     icon: "Layout",
   },
   {
+    id: "cat-3",
     name: "Backend & APIs",
     skills: ["Node.js", "Express.js", "NestJS", "ASP.NET", "Spring Boot", "FastAPI", "Django", "Flask"],
     icon: "Server",
   },
   {
+    id: "cat-4",
     name: "Databases",
     skills: ["PostgreSQL", "MySQL", "SQL Server", "Redis", "MongoDB", "Supabase", "Firebase"],
     icon: "Database",
   },
   {
+    id: "cat-5",
     name: "Authentication & Security",
     skills: ["JWT", "OAuth2", "RBAC", "API Security", "Secure Payment Flows", "Encryption", "Row-Level Security"],
     icon: "Shield",
   },
   {
+    id: "cat-6",
     name: "DevOps & Tools",
     skills: ["Git", "GitHub Actions", "GitLab", "Bitbucket", "Azure DevOps", "Jenkins", "Docker", "CI/CD"],
     icon: "GitBranch",
   },
   {
+    id: "cat-7",
     name: "AI & Integrations",
     skills: ["OpenAI APIs", "NLP", "TensorFlow", "Payment APIs", "WebSockets"],
     icon: "Brain",
@@ -57,6 +63,7 @@ export const skillCategories: SkillCategory[] = [
 
 export const workExperience: WorkExperience[] = [
   {
+    id: "exp-1",
     company: "STONETECH SQUARE",
     role: "Software Engineer",
     period: "2024 – 2025",
@@ -77,6 +84,7 @@ export const workExperience: WorkExperience[] = [
     ],
   },
   {
+    id: "exp-2",
     company: "SCORCHETECH",
     role: "Software Engineer",
     period: "Jan 2023 – Jan 2024",
@@ -97,6 +105,7 @@ export const workExperience: WorkExperience[] = [
     ],
   },
   {
+    id: "exp-3",
     company: "NEXOTECHNOLOGY LIMITED",
     role: "Software Engineer",
     period: "2023 – Present",
@@ -119,6 +128,7 @@ export const workExperience: WorkExperience[] = [
 
 export const projects: Project[] = [
   {
+    id: "proj-1",
     name: "KalmScript",
     tech: ["C#", "C/C++", "MSIL"],
     highlights: [
@@ -130,8 +140,13 @@ export const projects: Project[] = [
       "DLL dependency management",
     ],
     category: "Systems Programming",
+    project_type: "public",
+    github_url: "https://github.com/ibrahimtajudeen/kalmscript",
+    demo_url: null,
+    featured: true,
   },
   {
+    id: "proj-2",
     name: "DevGroupHub",
     tech: ["Node.js", "GitHub APIs", "Automation Systems"],
     highlights: [
@@ -140,8 +155,13 @@ export const projects: Project[] = [
       "Team collaboration systems",
     ],
     category: "Developer Tools",
+    project_type: "public",
+    github_url: "https://github.com/ibrahimtajudeen/devgrouphub",
+    demo_url: "https://devgrouphub.vercel.app",
+    featured: true,
   },
   {
+    id: "proj-3",
     name: "SaleTrack",
     tech: ["ASP.NET", "SQL Server", "React.js"],
     highlights: [
@@ -151,8 +171,13 @@ export const projects: Project[] = [
       "Fraud prevention systems",
     ],
     category: "Enterprise",
+    project_type: "customer",
+    github_url: null,
+    demo_url: "https://saletrack-demo.vercel.app",
+    featured: true,
   },
   {
+    id: "proj-4",
     name: "FinSight",
     tech: ["React.js", "Supabase", "OpenAI APIs"],
     highlights: [
@@ -161,8 +186,13 @@ export const projects: Project[] = [
       "Financial tracking systems",
     ],
     category: "Fintech",
+    project_type: "public",
+    github_url: "https://github.com/ibrahimtajudeen/finsight",
+    demo_url: "https://finsight-ai.vercel.app",
+    featured: true,
   },
   {
+    id: "proj-5",
     name: "QuickRun",
     tech: ["Flutter", "Node.js", "Payment APIs"],
     highlights: [
@@ -171,8 +201,13 @@ export const projects: Project[] = [
       "Wallet interactions",
     ],
     category: "Fintech",
+    project_type: "customer",
+    github_url: null,
+    demo_url: "https://quickrun.app",
+    featured: false,
   },
   {
+    id: "proj-6",
     name: "Hospital Management System",
     tech: ["ASP.NET", "SQL Server", "React.js"],
     highlights: [
@@ -181,8 +216,13 @@ export const projects: Project[] = [
       "Digital hospital operations",
     ],
     category: "Healthcare",
+    project_type: "customer",
+    github_url: null,
+    demo_url: null,
+    featured: false,
   },
   {
+    id: "proj-7",
     name: "School Management System",
     tech: ["ASP.NET", "SQL Server", "React.js"],
     highlights: [
@@ -191,8 +231,13 @@ export const projects: Project[] = [
       "Multi-branch architecture",
     ],
     category: "Education",
+    project_type: "customer",
+    github_url: null,
+    demo_url: null,
+    featured: false,
   },
   {
+    id: "proj-8",
     name: "ISQL",
     tech: ["C#", ".NET"],
     highlights: [
@@ -201,8 +246,13 @@ export const projects: Project[] = [
       "Custom data structures",
     ],
     category: "Systems Programming",
+    project_type: "public",
+    github_url: "https://github.com/ibrahimtajudeen/isql",
+    demo_url: null,
+    featured: false,
   },
   {
+    id: "proj-9",
     name: "Auth-Folio",
     tech: ["ASP.NET", "JWT", "REST APIs"],
     highlights: [
@@ -211,8 +261,13 @@ export const projects: Project[] = [
       "Secure integrations",
     ],
     category: "Security",
+    project_type: "public",
+    github_url: "https://github.com/ibrahimtajudeen/auth-folio",
+    demo_url: null,
+    featured: false,
   },
   {
+    id: "proj-10",
     name: "FuturePlanners",
     tech: ["React.js", "Node.js", "PostgreSQL"],
     highlights: [
@@ -221,8 +276,13 @@ export const projects: Project[] = [
       "Property workflows",
     ],
     category: "Real Estate",
+    project_type: "private",
+    github_url: null,
+    demo_url: "https://futureplanners.com",
+    featured: false,
   },
   {
+    id: "proj-11",
     name: "Standard Safe Construction",
     tech: ["Express.js", "MongoDB", "Cloudinary", "AI APIs"],
     highlights: [
@@ -231,8 +291,13 @@ export const projects: Project[] = [
       "Media management systems",
     ],
     category: "Construction",
+    project_type: "customer",
+    github_url: null,
+    demo_url: "https://standardsafe.com",
+    featured: false,
   },
   {
+    id: "proj-12",
     name: "AI-Based Phishing Detection",
     tech: ["Python", "TensorFlow", "REST APIs", "PowerShell"],
     highlights: [
@@ -242,15 +307,19 @@ export const projects: Project[] = [
       "PowerShell automation",
     ],
     category: "AI/ML",
+    project_type: "public",
+    github_url: "https://github.com/ibrahimtajudeen/ai-phishing-detection",
+    demo_url: null,
+    featured: false,
   },
 ]
 
 export const education: Education[] = [
-  { degree: "Diploma in Software Engineering", institution: "Kaduna ICT Hub" },
-  { degree: "Diploma in ICT", institution: "Dialogue ICT Schools" },
-  { degree: "Diploma in Computer Literacy & Programming Fundamentals", institution: "Notion Computer Technology" },
-  { degree: "WAEC", institution: "2020" },
-  { degree: "NECO", institution: "2020" },
+  { id: "edu-1", degree: "Diploma in Software Engineering", institution: "Kaduna ICT Hub" },
+  { id: "edu-2", degree: "Diploma in ICT", institution: "Dialogue ICT Schools" },
+  { id: "edu-3", degree: "Diploma in Computer Literacy & Programming Fundamentals", institution: "Notion Computer Technology" },
+  { id: "edu-4", degree: "WAEC", institution: "WAEC Board", year: "2020" },
+  { id: "edu-5", degree: "NECO", institution: "NECO Board", year: "2020" },
 ]
 
 export const leadershipAndStrengths = [

@@ -3,8 +3,9 @@
 import { useState, useEffect } from "react"
 import { motion, AnimatePresence } from "framer-motion"
 import { Button } from "@/components/ui/button"
-import { Moon, Sun, Menu, X, Download } from "lucide-react"
+import { Menu, X, FileText, ShieldCheck } from "lucide-react"
 import Link from "next/link"
+import ThemeToggle from "@/components/theme-toggle"
 
 const navLinks = [
   { href: "#about", label: "About" },
@@ -16,7 +17,6 @@ const navLinks = [
 ]
 
 export default function Navigation() {
-  const [isDark, setIsDark] = useState(true)
   const [isScrolled, setIsScrolled] = useState(false)
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
 
@@ -27,16 +27,6 @@ export default function Navigation() {
     window.addEventListener("scroll", handleScroll)
     return () => window.removeEventListener("scroll", handleScroll)
   }, [])
-
-  useEffect(() => {
-    if (isDark) {
-      document.documentElement.classList.add("dark")
-    } else {
-      document.documentElement.classList.remove("dark")
-    }
-  }, [isDark])
-
-  const toggleTheme = () => setIsDark(!isDark)
 
   return (
     <motion.header
@@ -51,9 +41,9 @@ export default function Navigation() {
     >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16">
-          <Link href="/" className="text-xl font-bold tracking-tight">
-            <span className="gradient-text">Nexo</span>
-            <span className="text-foreground">Code</span>
+          <Link href="/" className="text-xl font-bold tracking-tight flex items-center gap-1.5">
+            <span className="gradient-text text-2xl font-black">NEXO</span>
+            <span className="text-foreground tracking-widest font-mono text-sm uppercase">CODE</span>
           </Link>
 
           {/* Desktop Navigation */}
@@ -69,38 +59,37 @@ export default function Navigation() {
             ))}
           </nav>
 
-          <div className="hidden md:flex items-center space-x-2">
+          <div className="hidden md:flex items-center space-x-3">
+            <ThemeToggle />
+
             <Button
-              variant="ghost"
-              size="icon"
-              onClick={toggleTheme}
-              className="rounded-full"
+              variant="outline"
+              size="sm"
+              className="rounded-full border-primary/40 hover:border-primary text-xs"
+              asChild
             >
-              {isDark ? <Sun className="h-5 w-5" /> : <Moon className="h-5 w-5" />}
+              <Link href="/resume">
+                <FileText className="h-3.5 w-3.5 mr-1.5 text-primary" />
+                Resume PDF
+              </Link>
             </Button>
+
             <Button
               variant="default"
               size="sm"
-              className="rounded-full bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700"
+              className="rounded-full bg-primary text-primary-foreground text-xs font-semibold shadow-md shadow-primary/20"
               asChild
             >
-              <Link href="/api/resume" target="_blank">
-                <Download className="h-4 w-4 mr-2" />
-                Resume
+              <Link href="/admin/login">
+                <ShieldCheck className="h-3.5 w-3.5 mr-1.5" />
+                Admin
               </Link>
             </Button>
           </div>
 
-          {/* Mobile Menu Button */}
+          {/* Mobile Navigation Toggle */}
           <div className="md:hidden flex items-center space-x-2">
-            <Button
-              variant="ghost"
-              size="icon"
-              onClick={toggleTheme}
-              className="rounded-full"
-            >
-              {isDark ? <Sun className="h-5 w-5" /> : <Moon className="h-5 w-5" />}
-            </Button>
+            <ThemeToggle />
             <Button
               variant="ghost"
               size="icon"
@@ -113,7 +102,7 @@ export default function Navigation() {
         </div>
       </div>
 
-      {/* Mobile Menu */}
+      {/* Mobile Menu Drawer */}
       <AnimatePresence>
         {isMobileMenuOpen && (
           <motion.div
@@ -133,17 +122,30 @@ export default function Navigation() {
                   {link.label}
                 </Link>
               ))}
-              <Button
-                variant="default"
-                size="sm"
-                className="w-full mt-4 rounded-full bg-gradient-to-r from-blue-600 to-purple-600"
-                asChild
-              >
-                <Link href="/resume.pdf" target="_blank">
-                  <Download className="h-4 w-4 mr-2" />
-                  Download Resume
-                </Link>
-              </Button>
+              <div className="pt-2 flex flex-col gap-2">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="w-full rounded-full border-primary/40 text-xs"
+                  asChild
+                >
+                  <Link href="/resume" onClick={() => setIsMobileMenuOpen(false)}>
+                    <FileText className="h-3.5 w-3.5 mr-2 text-primary" />
+                    Resume PDF Viewer
+                  </Link>
+                </Button>
+                <Button
+                  variant="default"
+                  size="sm"
+                  className="w-full rounded-full bg-primary text-primary-foreground text-xs font-semibold"
+                  asChild
+                >
+                  <Link href="/admin/login" onClick={() => setIsMobileMenuOpen(false)}>
+                    <ShieldCheck className="h-3.5 w-3.5 mr-2" />
+                    Admin Login Portal
+                  </Link>
+                </Button>
+              </div>
             </div>
           </motion.div>
         )}
