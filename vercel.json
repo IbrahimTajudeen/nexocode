@@ -1,18 +1,1 @@
-{
-  "version": 2,
-  "builds": [],
-  "routes": [
-    {
-      "src": "/api/resume",
-      "dest": "/api/resume"
-    },
-    {
-      "src": "/resume",
-      "dest": "/resume"
-    },
-    {
-      "src": "/(.*)",
-      "dest": "/$1"
-    }
-  ]
-}
+{}

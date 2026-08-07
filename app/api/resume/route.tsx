@@ -1,7 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { renderToBuffer } from "@react-pdf/renderer";
 import { createClient } from "@supabase/supabase-js";
-import PDFResume, { PDFAccent } from "@/components/pdf/resume";
 import {
   personalInfo as defaultPersonalInfo,
   skillCategories as defaultSkillCategories,
@@ -11,8 +9,10 @@ import {
   leadershipAndStrengths as defaultLeadershipStrengths,
 } from "@/lib/resume-data";
 import { PersonalInfo, WorkExperience } from "@/types/resume";
+import type { PDFAccent } from "@/components/pdf/resume";
 
 export const runtime = "nodejs";
+export const dynamic = "force-dynamic";
 
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || "";
 const supabaseKey =
@@ -21,8 +21,6 @@ const supabaseKey =
   "";
 const isSupabaseConfigured = Boolean(supabaseUrl && supabaseKey);
 
-// See lib/redux/api/portfolioApi.ts - the DB columns are snake_case
-// (key_project, resume_website) while the app's TS types use camelCase.
 function rowToWorkExperience(row: any): WorkExperience {
   const { key_project, ...rest } = row;
   return { ...rest, keyProject: key_project ?? "" };
@@ -87,6 +85,12 @@ export async function GET(request: NextRequest) {
     const accent: PDFAccent = themeParam === "green" || themeParam === "red" ? themeParam : "blue";
 
     const data = await fetchResumeData();
+
+    // Dynamically import @react-pdf/renderer and PDFResume component inside runtime handler
+    const [{ renderToBuffer }, { default: PDFResume }] = await Promise.all([
+      import("@react-pdf/renderer"),
+      import("@/components/pdf/resume"),
+    ]);
 
     const buffer = await renderToBuffer(
       <PDFResume

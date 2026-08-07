@@ -46,12 +46,12 @@ export async function POST(req: Request) {
     }
 
     // 2. Send Email via Resend
-    const resendApiKey = process.env.RESEND_API_KEY
+    const resendApiKey = process.env.RESEND_API_KEY;
     if (resendApiKey) {
       try {
-        const resend = new Resend(resendApiKey)
-        const recipientEmail = process.env.CONTACT_EMAIL || "donslice6@gmail.com"
-        const fromEmail = process.env.RESEND_FROM_EMAIL || "Nexocode Portfolio <onboarding@resend.dev>"
+        const resend = new Resend(resendApiKey);
+        const recipientEmail = process.env.CONTACT_EMAIL || "donslice6@gmail.com";
+        const fromEmail = process.env.RESEND_FROM_EMAIL || "Nexocode Portfolio <onboarding@resend.dev>";
 
         const htmlContent = `
           <div style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 24px; border: 1px solid #e2e8f0; border-radius: 12px; background-color: #ffffff;">

@@ -7,10 +7,12 @@ import Projects from "@/components/sections/projects"
 import Education from "@/components/sections/education"
 import Contact from "@/components/sections/contact"
 import Footer from "@/components/sections/footer"
+import GalaxyBackground from "@/components/galaxy-background"
 
 export default function Home() {
   return (
-    <main className="min-h-screen bg-background text-foreground">
+    <main className="min-h-screen bg-background text-foreground relative">
+      <GalaxyBackground />
       <Navigation />
       <Hero />
       <About />
