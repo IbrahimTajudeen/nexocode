@@ -5,6 +5,7 @@ const nextConfig = {
     unoptimized: true,
   },
   trailingSlash: true,
+  serverExternalPackages: ["@react-pdf/renderer"],
 }
 
 module.exports = nextConfig

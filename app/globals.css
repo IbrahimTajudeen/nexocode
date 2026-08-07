@@ -3,7 +3,7 @@
 @tailwind utilities;
 
 @layer base {
-  /* Default Theme: Neon Blue Light Mode */
+  /* Default Theme: Ocean Blue */
   :root,
   .theme-blue {
     --background: 210 40% 98%;
@@ -12,58 +12,52 @@
     --card-foreground: 222 47% 11%;
     --popover: 0 0% 100%;
     --popover-foreground: 222 47% 11%;
-    --primary: 188 95% 42%; /* Neon Cyan / Blue */
+    --primary: 199 89% 48%; /* Deep Ocean Blue */
     --primary-foreground: 210 40% 98%;
-    --secondary: 199 89% 94%;
-    --secondary-foreground: 199 89% 25%;
+    --secondary: 210 40% 96%;
+    --secondary-foreground: 222 47% 15%;
     --muted: 210 40% 94%;
     --muted-foreground: 215 16% 45%;
-    --accent: 188 95% 90%;
-    --accent-foreground: 188 95% 30%;
+    --accent: 199 89% 92%;
+    --accent-foreground: 199 89% 25%;
     --destructive: 0 84% 60%;
     --destructive-foreground: 210 40% 98%;
-    --border: 214 32% 88%;
-    --input: 214 32% 88%;
-    --ring: 188 95% 42%;
+    --border: 214 32% 91%;
+    --input: 214 32% 91%;
+    --ring: 199 89% 48%;
     --radius: 0.75rem;
 
-    --neon-glow: 0 0 20px rgba(6, 182, 212, 0.4);
-    --neon-glow-strong: 0 0 35px rgba(6, 182, 212, 0.6);
-    --neon-border: rgba(6, 182, 212, 0.5);
-    --neon-gradient-from: #06b6d4;
-    --neon-gradient-to: #3b82f6;
+    --brand-gradient-from: #0284c7;
+    --brand-gradient-to: #2563eb;
   }
 
   .theme-blue.dark,
   .dark {
-    --background: 224 71% 4%; /* Deep Space #050811 */
+    --background: 222 47% 6%; /* Rich Dark Obsidian #090d16 */
     --foreground: 210 40% 98%;
-    --card: 222 47% 7%;
+    --card: 222 40% 9%;
     --card-foreground: 210 40% 98%;
-    --popover: 222 47% 7%;
+    --popover: 222 40% 9%;
     --popover-foreground: 210 40% 98%;
-    --primary: 188 100% 50%; /* Electric Cyan */
-    --primary-foreground: 222 47% 4%;
-    --secondary: 217 33% 15%;
+    --primary: 199 89% 55%; /* Vibrant Sky/Ocean */
+    --primary-foreground: 222 47% 6%;
+    --secondary: 217 33% 14%;
     --secondary-foreground: 210 40% 98%;
     --muted: 217 33% 12%;
     --muted-foreground: 215 20% 65%;
-    --accent: 188 100% 15%;
-    --accent-foreground: 188 100% 85%;
+    --accent: 199 89% 15%;
+    --accent-foreground: 199 89% 85%;
     --destructive: 0 63% 31%;
     --destructive-foreground: 210 40% 98%;
-    --border: 217 33% 18%;
-    --input: 217 33% 18%;
-    --ring: 188 100% 50%;
+    --border: 217 33% 16%;
+    --input: 217 33% 16%;
+    --ring: 199 89% 55%;
 
-    --neon-glow: 0 0 25px rgba(6, 182, 212, 0.5);
-    --neon-glow-strong: 0 0 45px rgba(6, 182, 212, 0.8);
-    --neon-border: rgba(6, 182, 212, 0.6);
-    --neon-gradient-from: #00f0ff;
-    --neon-gradient-to: #3b82f6;
+    --brand-gradient-from: #38bdf8;
+    --brand-gradient-to: #60a5fa;
   }
 
-  /* Neon Green Theme */
+  /* Emerald Teal Theme */
   .theme-green {
     --background: 140 30% 98%;
     --foreground: 155 50% 10%;
@@ -71,56 +65,50 @@
     --card-foreground: 155 50% 10%;
     --popover: 0 0% 100%;
     --popover-foreground: 155 50% 10%;
-    --primary: 150 84% 38%; /* Emerald / Matrix Green */
+    --primary: 160 84% 36%; /* Deep Emerald */
     --primary-foreground: 140 30% 98%;
-    --secondary: 145 70% 93%;
-    --secondary-foreground: 150 84% 20%;
+    --secondary: 145 70% 94%;
+    --secondary-foreground: 160 84% 20%;
     --muted: 140 25% 94%;
     --muted-foreground: 150 15% 45%;
-    --accent: 145 70% 88%;
-    --accent-foreground: 150 84% 25%;
+    --accent: 145 70% 90%;
+    --accent-foreground: 160 84% 25%;
     --destructive: 0 84% 60%;
     --destructive-foreground: 210 40% 98%;
-    --border: 145 25% 85%;
-    --input: 145 25% 85%;
-    --ring: 150 84% 38%;
+    --border: 145 25% 88%;
+    --input: 145 25% 88%;
+    --ring: 160 84% 36%;
 
-    --neon-glow: 0 0 20px rgba(16, 185, 129, 0.4);
-    --neon-glow-strong: 0 0 35px rgba(16, 185, 129, 0.6);
-    --neon-border: rgba(16, 185, 129, 0.5);
-    --neon-gradient-from: #10b981;
-    --neon-gradient-to: #10b981;
+    --brand-gradient-from: #059669;
+    --brand-gradient-to: #0d9488;
   }
 
   .theme-green.dark {
-    --background: 155 60% 4%; /* Cyber Deep Matrix #041209 */
+    --background: 160 50% 5%;
     --foreground: 140 30% 98%;
-    --card: 155 45% 7%;
+    --card: 160 40% 8%;
     --card-foreground: 140 30% 98%;
-    --popover: 155 45% 7%;
+    --popover: 160 40% 8%;
     --popover-foreground: 140 30% 98%;
-    --primary: 150 100% 48%; /* Cyber Neon Green */
-    --primary-foreground: 155 60% 4%;
-    --secondary: 155 30% 15%;
+    --primary: 160 75% 48%; /* Crisp Teal Emerald */
+    --primary-foreground: 160 50% 5%;
+    --secondary: 160 30% 14%;
     --secondary-foreground: 140 30% 98%;
-    --muted: 155 30% 12%;
+    --muted: 160 30% 12%;
     --muted-foreground: 150 20% 65%;
-    --accent: 150 100% 15%;
-    --accent-foreground: 150 100% 85%;
+    --accent: 160 75% 15%;
+    --accent-foreground: 160 75% 85%;
     --destructive: 0 63% 31%;
     --destructive-foreground: 210 40% 98%;
-    --border: 155 30% 18%;
-    --input: 155 30% 18%;
-    --ring: 150 100% 48%;
+    --border: 160 30% 16%;
+    --input: 160 30% 16%;
+    --ring: 160 75% 48%;
 
-    --neon-glow: 0 0 25px rgba(16, 185, 129, 0.5);
-    --neon-glow-strong: 0 0 45px rgba(16, 185, 129, 0.8);
-    --neon-border: rgba(16, 185, 129, 0.6);
-    --neon-gradient-from: #00ff88;
-    --neon-gradient-to: #10b981;
+    --brand-gradient-from: #34d399;
+    --brand-gradient-to: #2dd4bf;
   }
 
-  /* Neon Red Theme */
+  /* Crimson Accent Theme */
   .theme-red {
     --background: 350 30% 98%;
     --foreground: 345 50% 10%;
@@ -128,53 +116,47 @@
     --card-foreground: 345 50% 10%;
     --popover: 0 0% 100%;
     --popover-foreground: 345 50% 10%;
-    --primary: 345 85% 50%; /* Crimson Neon Red */
+    --primary: 345 75% 48%; /* Rich Crimson Rose */
     --primary-foreground: 350 30% 98%;
     --secondary: 350 75% 94%;
-    --secondary-foreground: 345 85% 25%;
+    --secondary-foreground: 345 75% 25%;
     --muted: 350 25% 94%;
     --muted-foreground: 345 15% 45%;
-    --accent: 350 75% 88%;
-    --accent-foreground: 345 85% 30%;
+    --accent: 350 75% 90%;
+    --accent-foreground: 345 75% 30%;
     --destructive: 0 84% 60%;
     --destructive-foreground: 210 40% 98%;
-    --border: 350 25% 86%;
-    --input: 350 25% 86%;
-    --ring: 345 85% 50%;
+    --border: 350 25% 88%;
+    --input: 350 25% 88%;
+    --ring: 345 75% 48%;
 
-    --neon-glow: 0 0 20px rgba(244, 63, 94, 0.4);
-    --neon-glow-strong: 0 0 35px rgba(244, 63, 94, 0.6);
-    --neon-border: rgba(244, 63, 94, 0.5);
-    --neon-gradient-from: #f43f5e;
-    --neon-gradient-to: #e11d48;
+    --brand-gradient-from: #e11d48;
+    --brand-gradient-to: #db2777;
   }
 
   .theme-red.dark {
-    --background: 345 60% 4%; /* Cyber Red Void #140509 */
+    --background: 345 50% 5%;
     --foreground: 350 30% 98%;
-    --card: 345 45% 7%;
+    --card: 345 40% 8%;
     --card-foreground: 350 30% 98%;
-    --popover: 345 45% 7%;
+    --popover: 345 40% 8%;
     --popover-foreground: 350 30% 98%;
-    --primary: 345 100% 60%; /* Vibrant Neon Crimson */
-    --primary-foreground: 345 60% 4%;
-    --secondary: 345 30% 15%;
+    --primary: 345 85% 58%; /* Elegant Rose Crimson */
+    --primary-foreground: 345 50% 5%;
+    --secondary: 345 30% 14%;
     --secondary-foreground: 350 30% 98%;
     --muted: 345 30% 12%;
     --muted-foreground: 345 20% 65%;
-    --accent: 345 100% 15%;
-    --accent-foreground: 345 100% 85%;
+    --accent: 345 85% 15%;
+    --accent-foreground: 345 85% 85%;
     --destructive: 0 63% 31%;
     --destructive-foreground: 210 40% 98%;
-    --border: 345 30% 18%;
-    --input: 345 30% 18%;
-    --ring: 345 100% 60%;
+    --border: 345 30% 16%;
+    --input: 345 30% 16%;
+    --ring: 345 85% 58%;
 
-    --neon-glow: 0 0 25px rgba(244, 63, 94, 0.5);
-    --neon-glow-strong: 0 0 45px rgba(244, 63, 94, 0.8);
-    --neon-border: rgba(244, 63, 94, 0.6);
-    --neon-gradient-from: #ff0055;
-    --neon-gradient-to: #f43f5e;
+    --brand-gradient-from: #fb7185;
+    --brand-gradient-to: #f472b6;
   }
 }
 
@@ -183,8 +165,8 @@
     @apply border-border;
   }
   body {
-    @apply bg-background text-foreground transition-colors duration-300;
-    font-feature-settings: "rlig" 1, "calt" 1;
+    @apply bg-background text-foreground transition-colors duration-300 antialiased;
+    font-feature-settings: "cv02", "cv03", "cv04", "cv11";
   }
   html {
     scroll-behavior: smooth;
@@ -196,29 +178,12 @@
     text-wrap: balance;
   }
 
-  .neon-glow {
-    box-shadow: var(--neon-glow);
-  }
-
-  .neon-glow-strong {
-    box-shadow: var(--neon-glow-strong);
-  }
-
-  .neon-border {
-    border-color: var(--neon-border);
-  }
-
   .gradient-text {
     @apply bg-clip-text text-transparent bg-gradient-to-r;
-    background-image: linear-gradient(to right, var(--neon-gradient-from), var(--neon-gradient-to));
+    background-image: linear-gradient(to right, var(--brand-gradient-from), var(--brand-gradient-to));
   }
 
-  .neon-card {
-    @apply relative rounded-2xl border border-border/80 bg-card/60 backdrop-blur-md transition-all duration-300;
-  }
-
-  .neon-card:hover {
-    box-shadow: var(--neon-glow);
-    border-color: var(--neon-border);
+  .pro-card {
+    @apply relative rounded-2xl border border-border/70 bg-card/70 backdrop-blur-md transition-all duration-200 hover:border-primary/40 hover:shadow-md;
   }
 }

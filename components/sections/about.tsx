@@ -4,7 +4,7 @@ import { useRef } from "react"
 import { motion, useInView } from "framer-motion"
 import { Card, CardContent } from "@/components/ui/card"
 import { useGetPersonalInfoQuery, useGetHighlightsQuery } from "@/lib/redux/api/portfolioApi"
-import { Code2, Database, Shield, Server, User, Sparkles } from "lucide-react"
+import { Code2, Database, Shield, Server, Sparkles } from "lucide-react"
 
 const iconMap: Record<string, React.ElementType> = {
   Code2,
@@ -21,61 +21,65 @@ export default function About() {
   const { data: highlights = [] } = useGetHighlightsQuery()
 
   return (
-    <section id="about" className="py-20 lg:py-32 relative bg-background">
+    <section id="about" className="py-20 lg:py-28 relative bg-background">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        {/* Standardized Neon Header */}
         <motion.div
           ref={ref}
-          initial={{ opacity: 0, y: 40 }}
+          initial={{ opacity: 0, y: 20 }}
           animate={isInView ? { opacity: 1, y: 0 } : {}}
-          transition={{ duration: 0.7 }}
-          className="text-center mb-16"
+          transition={{ duration: 0.5 }}
+          className="mb-14"
         >
-          <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full border border-primary/40 bg-primary/10 text-primary text-xs font-mono mb-4">
-            <User className="w-3.5 h-3.5" />
-            <span>BACKGROUND & SUMMARY</span>
-          </div>
-          <h2 className="text-3xl sm:text-5xl font-extrabold mb-4">
-            Professional <span className="gradient-text">Overview</span>
+          <h2 className="text-3xl sm:text-4xl font-extrabold tracking-tight text-foreground mb-3">
+            Professional Overview
           </h2>
-          <div className="w-24 h-1.5 bg-gradient-to-r from-primary via-primary/80 to-transparent mx-auto rounded-full mb-6" />
+          <p className="text-muted-foreground text-sm sm:text-base max-w-2xl leading-relaxed">
+            Core engineering philosophy, system architecture focus, and technical capabilities.
+          </p>
         </motion.div>
 
-        <div className="grid lg:grid-cols-2 gap-12 items-stretch">
+        <div className="grid lg:grid-cols-12 gap-8 items-stretch">
           {/* Bio Summary Card */}
           <motion.div
-            initial={{ opacity: 0, x: -40 }}
-            animate={isInView ? { opacity: 1, x: 0 } : {}}
-            transition={{ duration: 0.7, delay: 0.2 }}
-            className="h-full"
+            initial={{ opacity: 0, y: 20 }}
+            animate={isInView ? { opacity: 1, y: 0 } : {}}
+            transition={{ duration: 0.5, delay: 0.1 }}
+            className="lg:col-span-6 flex"
           >
-            <Card className="h-full border border-border/80 bg-card/60 backdrop-blur-md hover:border-primary/40 transition-all shadow-xl">
-              <CardContent className="p-8 flex flex-col justify-center">
-                <p className="text-base sm:text-lg leading-relaxed text-muted-foreground whitespace-pre-line font-normal">
-                  {info?.summary || "Software Engineer experienced in building scalable backend systems, fintech infrastructure, AI-powered platforms, and cross-platform applications across web, desktop, and mobile environments."}
+            <Card className="w-full border border-border/80 bg-card/70 backdrop-blur-md shadow-sm flex flex-col justify-center">
+              <CardContent className="p-7 sm:p-8">
+                <h3 className="text-lg font-bold text-foreground mb-4 flex items-center gap-2">
+                  <span className="w-2 h-2 rounded-full bg-primary inline-block" />
+                  Engineering Profile
+                </h3>
+                <p className="text-sm sm:text-base leading-relaxed text-muted-foreground whitespace-pre-line">
+                  {info?.summary ||
+                    "Software Engineer experienced in building scalable backend systems, fintech infrastructure, AI-powered platforms, and cross-platform applications across web, desktop, and mobile environments."}
                 </p>
               </CardContent>
             </Card>
           </motion.div>
 
           {/* Highlights Grid */}
-          <div className="grid grid-cols-2 gap-4">
+          <div className="lg:col-span-6 grid sm:grid-cols-2 gap-4">
             {highlights.map((item, index) => {
               const IconComponent = iconMap[item.icon] || Sparkles
               return (
                 <motion.div
                   key={item.id || item.title}
-                  initial={{ opacity: 0, y: 30 }}
+                  initial={{ opacity: 0, y: 20 }}
                   animate={isInView ? { opacity: 1, y: 0 } : {}}
-                  transition={{ duration: 0.5, delay: 0.3 + index * 0.1 }}
+                  transition={{ duration: 0.4, delay: 0.2 + index * 0.08 }}
                 >
-                  <Card className="h-full border border-border/80 bg-card/60 backdrop-blur-md hover:border-primary/50 transition-all group cursor-default">
-                    <CardContent className="p-6 flex flex-col items-center text-center">
-                      <div className="w-12 h-12 rounded-xl bg-primary/10 border border-primary/30 flex items-center justify-center mb-3 group-hover:scale-110 transition-transform text-primary">
-                        <IconComponent className="w-6 h-6" />
+                  <Card className="h-full border border-border/80 bg-card/60 hover:border-primary/40 hover:bg-card transition-all duration-200 shadow-sm group">
+                    <CardContent className="p-6 flex flex-col justify-between h-full">
+                      <div className="w-10 h-10 rounded-xl bg-primary/10 border border-primary/20 flex items-center justify-center mb-4 text-primary shrink-0">
+                        <IconComponent className="w-5 h-5" />
                       </div>
-                      <h3 className="font-bold text-foreground mb-1 text-sm">{item.title}</h3>
-                      <p className="text-xs text-muted-foreground leading-relaxed">{item.description}</p>
+                      <div>
+                        <h3 className="font-bold text-foreground mb-1 text-sm">{item.title}</h3>
+                        <p className="text-xs text-muted-foreground leading-relaxed">{item.description}</p>
+                      </div>
                     </CardContent>
                   </Card>
                 </motion.div>

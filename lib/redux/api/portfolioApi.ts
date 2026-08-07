@@ -311,15 +311,19 @@ export const portfolioApi = createApi({
     }),
     addContactMessage: builder.mutation<{ success: boolean; message: string }, Omit<ContactSubmission, "id" | "created_at">>({
       async queryFn(submission) {
-        if (!isSupabaseConfigured || !supabase) {
-          return { data: { success: true, message: "Thank you! Your message has been sent successfully." } }
-        }
         try {
-          const { error } = await supabase.from("contact_submissions").insert([submission])
-          if (error) return { error: { status: 500, data: error.message } }
-          return { data: { success: true, message: "Thank you! Your message has been saved successfully." } }
+          const res = await fetch("/api/contact", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(submission),
+          })
+          const data = await res.json()
+          if (!res.ok) {
+            return { error: { status: res.status, data: data.error || "Failed to submit message." } }
+          }
+          return { data: { success: true, message: data.message || "Thank you! Your message has been sent successfully." } }
         } catch (err: any) {
-          return { error: { status: 500, data: err.message || "Failed to submit message." } }
+          return { error: { status: 500, data: err.message || "Failed to connect to server." } }
         }
       },
       invalidatesTags: ["ContactMessages"],

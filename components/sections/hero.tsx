@@ -2,9 +2,8 @@
 
 import { motion } from "framer-motion"
 import { Button } from "@/components/ui/button"
-import { Badge } from "@/components/ui/badge"
 import { useGetPersonalInfoQuery } from "@/lib/redux/api/portfolioApi"
-import { Github, Linkedin, Globe, Mail, ArrowDown, MapPin, Sparkles } from "lucide-react"
+import { Github, Linkedin, Globe, Mail, ArrowDown, MapPin, Code2 } from "lucide-react"
 import Link from "next/link"
 
 export default function Hero() {
@@ -14,66 +13,63 @@ export default function Hero() {
 
   return (
     <section
-      id="about"
-      className="relative min-h-screen flex items-center justify-center overflow-hidden pt-24 pb-12"
+      id="hero"
+      className="relative min-h-[90vh] flex items-center justify-center pt-28 pb-16 overflow-hidden"
     >
-      {/* Dynamic Background Glow Orbs */}
-      <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-primary/15 rounded-full blur-3xl animate-pulse" />
-      <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-primary/10 rounded-full blur-3xl animate-pulse" />
+      {/* Subtle Grid Background */}
+      <div className="absolute inset-0 bg-[radial-gradient(#e5e7eb_1px,transparent_1px)] dark:bg-[radial-gradient(#1f2937_1px,transparent_1px)] [background-size:24px_24px] opacity-40 pointer-events-none" />
 
       <div className="relative z-10 max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
         <motion.div
-          initial={{ opacity: 0, y: 30 }}
+          initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6 }}
+          transition={{ duration: 0.5 }}
+          className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full border border-border bg-card/60 backdrop-blur-sm text-xs font-mono text-muted-foreground mb-6 shadow-sm"
         >
-          <Badge
-            variant="outline"
-            className="mb-6 px-4 py-1.5 text-xs font-mono rounded-full border-primary/40 bg-primary/10 text-primary uppercase tracking-widest inline-flex items-center gap-1.5 shadow-lg shadow-primary/10"
-          >
-            <MapPin className="w-3.5 h-3.5" />
-            {info.location}
-          </Badge>
+          <MapPin className="w-3.5 h-3.5 text-primary shrink-0" />
+          <span>{info.location}</span>
+          <span className="w-1 h-1 rounded-full bg-emerald-500 ml-1 inline-block" />
+          <span className="text-[11px] text-foreground font-sans">Available for Opportunities</span>
         </motion.div>
 
         <motion.h1
-          initial={{ opacity: 0, y: 30 }}
+          initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, delay: 0.1 }}
-          className="text-5xl sm:text-7xl lg:text-8xl font-black tracking-tight mb-4"
+          transition={{ duration: 0.5, delay: 0.1 }}
+          className="text-5xl sm:text-7xl lg:text-8xl font-black tracking-tight mb-4 text-foreground"
         >
-          <span className="gradient-text">{info.name}</span>
+          {info.name}
         </motion.h1>
 
         <motion.h2
-          initial={{ opacity: 0, y: 30 }}
+          initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, delay: 0.2 }}
-          className="text-2xl sm:text-3xl font-bold text-foreground mb-4 tracking-wide"
+          transition={{ duration: 0.5, delay: 0.2 }}
+          className="text-2xl sm:text-3xl font-semibold text-primary mb-6 tracking-normal"
         >
           {info.title}
         </motion.h2>
 
         <motion.p
-          initial={{ opacity: 0, y: 30 }}
+          initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, delay: 0.3 }}
-          className="text-base sm:text-lg text-muted-foreground max-w-3xl mx-auto mb-10 leading-relaxed font-mono"
+          transition={{ duration: 0.5, delay: 0.3 }}
+          className="text-base sm:text-lg text-muted-foreground max-w-2xl mx-auto mb-10 leading-relaxed font-normal"
         >
           {info.tagline}
         </motion.p>
 
         <motion.div
-          initial={{ opacity: 0, y: 30 }}
+          initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, delay: 0.4 }}
+          transition={{ duration: 0.5, delay: 0.4 }}
           className="flex flex-wrap justify-center gap-3 mb-10"
         >
           {info.github && (
             <Button
               variant="outline"
               size="sm"
-              className="rounded-full border-border/80 hover:border-primary hover:text-primary transition-all text-xs"
+              className="rounded-xl border-border bg-card/60 hover:bg-card hover:text-primary transition-all text-xs font-medium"
               asChild
             >
               <Link href={info.github} target="_blank">
@@ -86,7 +82,7 @@ export default function Hero() {
             <Button
               variant="outline"
               size="sm"
-              className="rounded-full border-border/80 hover:border-primary hover:text-primary transition-all text-xs"
+              className="rounded-xl border-border bg-card/60 hover:bg-card hover:text-primary transition-all text-xs font-medium"
               asChild
             >
               <Link href={info.linkedin} target="_blank">
@@ -99,7 +95,7 @@ export default function Hero() {
             <Button
               variant="outline"
               size="sm"
-              className="rounded-full border-border/80 hover:border-primary hover:text-primary transition-all text-xs"
+              className="rounded-xl border-border bg-card/60 hover:bg-card hover:text-primary transition-all text-xs font-medium"
               asChild
             >
               <Link href={info.portfolio} target="_blank">
@@ -112,7 +108,7 @@ export default function Hero() {
             <Button
               variant="outline"
               size="sm"
-              className="rounded-full border-border/80 hover:border-primary hover:text-primary transition-all text-xs"
+              className="rounded-xl border-border bg-card/60 hover:bg-card hover:text-primary transition-all text-xs font-medium"
               asChild
             >
               <Link href={`mailto:${info.email}`}>
@@ -124,25 +120,25 @@ export default function Hero() {
         </motion.div>
 
         <motion.div
-          initial={{ opacity: 0, y: 30 }}
+          initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, delay: 0.5 }}
+          transition={{ duration: 0.5, delay: 0.5 }}
           className="flex justify-center gap-4 mb-16"
         >
           <Button
             size="lg"
-            className="rounded-full bg-primary text-primary-foreground hover:opacity-90 shadow-lg shadow-primary/25 font-semibold px-8 transition-all scale-105"
+            className="rounded-xl bg-primary text-primary-foreground hover:opacity-90 font-medium px-7 shadow-sm transition-all"
             asChild
           >
             <Link href="#projects">
-              <Sparkles className="w-4 h-4 mr-2" />
-              Explore Portfolio
+              <Code2 className="w-4 h-4 mr-2" />
+              View Featured Work
             </Link>
           </Button>
           <Button
             variant="outline"
             size="lg"
-            className="rounded-full border-primary/40 hover:bg-primary/10 text-foreground px-8 font-semibold"
+            className="rounded-xl border-border bg-card/80 hover:bg-accent text-foreground px-7 font-medium"
             asChild
           >
             <Link href="#contact">
@@ -154,14 +150,15 @@ export default function Hero() {
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
-          transition={{ duration: 0.6, delay: 1 }}
-          className="absolute bottom-6 left-1/2 -translate-x-1/2"
+          transition={{ duration: 0.5, delay: 0.8 }}
+          className="pt-8"
         >
           <motion.div
-            animate={{ y: [0, 8, 0] }}
+            animate={{ y: [0, 6, 0] }}
             transition={{ duration: 2, repeat: Infinity }}
+            className="inline-block"
           >
-            <ArrowDown className="w-5 h-5 text-muted-foreground/60" />
+            <ArrowDown className="w-4 h-4 text-muted-foreground/50" />
           </motion.div>
         </motion.div>
       </div>
