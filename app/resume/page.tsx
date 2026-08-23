@@ -1,8 +1,10 @@
 "use client"
 
+export const dynamic = 'force-dynamic'
+
 import { useState, useEffect } from "react"
 import Link from "next/link"
-import dynamic from "next/dynamic"
+import nextDynamic from "next/dynamic"
 import { Button } from "@/components/ui/button"
 import { Eye, Loader2, ArrowLeft } from "lucide-react"
 import { useTheme } from "@/components/theme-provider"
@@ -17,7 +19,7 @@ import {
 } from "@/lib/redux/api/portfolioApi"
 import { personalInfo as defaultPersonalInfo } from "@/lib/resume-data"
 
-const ResumeViewerClient = dynamic(
+const ResumeViewerClient = nextDynamic(
   () => import("@/components/pdf/resume-viewer-client"),
   {
     ssr: false,
