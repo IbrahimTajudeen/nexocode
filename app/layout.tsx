@@ -19,6 +19,9 @@ export const metadata: Metadata = {
   description: "Backend Systems • Fintech Infrastructure • Modern Web Applications. Software Engineer experienced in building scalable backend systems, fintech infrastructure, AI-powered platforms, and cross-platform applications.",
   keywords: ["Software Engineer", "Backend", "Fintech", "NestJS", "React", "C#", "PostgreSQL", "API Development"],
   authors: [{ name: "Ibrahim Tajudeen" }],
+  icons: {
+    icon: "/favIcon.png",
+  },
   openGraph: {
     title: "Ibrahim Tajudeen | Software Engineer & Portfolio",
     description: "Backend Systems • Fintech Infrastructure • Modern Web Applications",
